@@ -1,4 +1,5 @@
 ﻿using Common.Dto.Input;
+using Services.Common.Interfaces;
 
 namespace Services.Common
 {
@@ -6,7 +7,16 @@ namespace Services.Common
     {
         public void AddTransactions(InputTransactions dataInput)
         {
-            throw new NotImplementedException();
+            //get start and end date of the input transactions
+            
+            //get all persisted transactions for date range (given start and end transaction, also include other transactions before start and after end that have same matching criteria)
+
+            //GetProposedTransactionChangeLog(dataInput, persistedTransactions) (implementation added in below)
+
+            //ProposedTransactionChangeLog.SaveProposedChanges()
+
+            //Return ProposedChanges via DTO
+
         }
     }
 }

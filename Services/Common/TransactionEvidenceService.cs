@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Services.Common
 {
-    //don't implement yet
-    internal class TransactionEvidenceService : ITransactionEvidenceService
+    //TBI
+    internal class TransactionEvidenceService : ProposedTransactionChangeLog
     {
     }
 }

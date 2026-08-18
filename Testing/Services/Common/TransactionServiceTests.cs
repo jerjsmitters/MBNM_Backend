@@ -1,6 +1,6 @@
-﻿namespace Testing
+﻿namespace Testing.Services.Common
 {
-    public class UnitTest1
+    public class TransactionServiceTests
     {
         [Fact]
         public void Test1()
