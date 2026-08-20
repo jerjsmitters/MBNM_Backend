@@ -7,9 +7,9 @@ using System.Text;
 namespace Services.Common
 {
     //TBI
-    internal class TransactionCategoryService : ITransactionService
+    internal class TransactionCategoryService : ITransactionCategoryService
     {
-        public void AddTransactions(InputTransactions dataInput)
+        public void AddTransactions(InputTransactionsDto dataInput)
         {
             throw new NotImplementedException();
         }

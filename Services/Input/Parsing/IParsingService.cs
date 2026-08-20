@@ -7,6 +7,6 @@ namespace Services.Input.Parsing
 {
     internal interface IParsingService
     {
-        public InputTransactions ParseInputData(string data);
+        public InputTransactionsDto ParseInputData(string data);
     }
 }

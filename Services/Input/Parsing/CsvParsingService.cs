@@ -7,12 +7,12 @@ namespace Services.Input.Parsing
 {
     internal class CsvParsingService : IParsingService
     {
-        public InputTransactions ParseInputData(string data)
+        public InputTransactionsDto ParseInputData(string data)
         {
             return ParseCsv(data);
         }
 
-        private InputTransactions ParseCsv(string csvContent)
+        private InputTransactionsDto ParseCsv(string csvContent)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,7 @@ using System.Text;
 namespace Services.Common.Interfaces
 {
     //TBI
-    internal interface ProposedTransactionChangeLog
+    internal interface ITransactionEvidenceService
     {
     }
 }

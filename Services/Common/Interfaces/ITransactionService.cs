@@ -7,6 +7,6 @@ namespace Services.Common.Interfaces
 {
     internal interface ITransactionService
     {
-        void AddTransactions(InputTransactions dataInput);
+        ProposedTransactionChangesDto AddTransactions(InputTransactionsDto dataInput);
     }
 }
