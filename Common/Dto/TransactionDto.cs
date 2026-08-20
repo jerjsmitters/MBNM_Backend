@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Services.Common
+namespace Common.Dto
 {
-    //TBI
-    internal class ProposedTransactionChangeLog
+    public record TransactionDto
     {
     }
 }

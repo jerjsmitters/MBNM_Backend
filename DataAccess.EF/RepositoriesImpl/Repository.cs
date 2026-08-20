@@ -7,6 +7,5 @@ namespace DataAccess.EF.RepositoriesImpl
 {
     public abstract class Repository(EfDbContext context)
     {
-        public EfDbContext Context { get; } = context;
     }
 }
