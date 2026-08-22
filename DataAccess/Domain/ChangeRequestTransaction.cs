@@ -6,9 +6,10 @@ using System.Text;
 
 namespace DataAccess.Abstractions.Domain
 {
-    public class ProposedTransactionListChange : EntityBase
+    public class ChangeRequestTransaction : EntityBase
     {
         public Transaction Transaction { get; set; }
-        public ProposedChangeOperation ProposedChangeOperation { get; set; }
+        public ChangeRequestOperation ProposedChangeOperation { get; set; }
+        public ChangeRequestState RequestState { get; set; }
     }
 }

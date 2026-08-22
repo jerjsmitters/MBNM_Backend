@@ -4,7 +4,7 @@ using DataAccess.EF.DbContextImpl;
 
 namespace DataAccess.EF.RepositoriesImpl
 {
-    public class ProposedTransactionListChangeRepository(EfDbContext context) : GenericRepository<ProposedTransactionListChange>(context), IProposedTransactionListChangeRepository
+    public class ProposedTransactionListChangeRepository(EfDbContext context) : GenericRepository<ChangeRequestTransaction>(context), IProposedTransactionListChangeRepository
     {
     }
 }

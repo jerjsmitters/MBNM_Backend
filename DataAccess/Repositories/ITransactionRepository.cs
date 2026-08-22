@@ -10,6 +10,6 @@ namespace DataAccess.Abstractions.Repositories
         /// <summary>
         /// Get all transactions within date-range, plus any transactions directly before and after which have the same category as the first and last entries respectively
         /// </summary>
-        List<Transaction> GetTransactionsForProposedTransactionChange(DateTime startDate, DateTime endDate);
+        List<Transaction> GetTransactionsForProposedTransactionChange(DateOnly startDate, DateOnly endDate);
     }
 }

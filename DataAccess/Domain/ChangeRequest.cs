@@ -5,8 +5,8 @@ using System.Text;
 
 namespace DataAccess.Abstractions.Domain
 {
-    public class ProposedTransactionListChanges : EntityBase
+    public class ChangeRequest : EntityBase
     {
-        public List<ProposedTransactionListChange> ProposedChanges {  get; set; }
+        public List<ChangeRequestTransaction> ProposedChanges {  get; set; }
     }
 }

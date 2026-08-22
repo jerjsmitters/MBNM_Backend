@@ -4,30 +4,31 @@ using DataAccess.Abstractions.Domain;
 using DataAccess.Abstractions.Repositories;
 using Services.Common.Interfaces;
 using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Common
 {
-    public class TransactionService(ITransactionRepository transactionRepository, IProposedTransactionChangeService proposedTransactionChangeService) : ITransactionService
+    public class TransactionService(ITransactionRepository transactionRepository, IChangeRequestService proposedTransactionChangeService) : ITransactionService
     {
-        public ProposedTransactionChangesDto AddTransactions(InputTransactionsDto dataInput)
+        public ChangeRequestDto AddTransactions(InputTransactionsDto dataInput)
         {
             if (dataInput == null || (dataInput.Transactions?.Count ?? 0) == 0)
             {
-                return new ProposedTransactionChangesDto();
+                return new ChangeRequestDto();
             }
             
             var dateRange = GetDateRangeOfInputTransactions(dataInput.Transactions);
 
             List<TransactionDto> persistedTransactionsForDateRange = GetTransactionsForProposedTransactionChange(dateRange.Item1, dateRange.Item2);
 
-            var proposedTransactionChangeLog = proposedTransactionChangeService.GenerateProposedChanges(dataInput.Transactions, persistedTransactionsForDateRange);
-            proposedTransactionChangeService.SaveProposedChanges(proposedTransactionChangeLog);
+            var proposedTransactionChangeLog = proposedTransactionChangeService.GenerateChangeRequest(dataInput.Transactions, persistedTransactionsForDateRange);
+            proposedTransactionChangeService.SaveChangeRequest(proposedTransactionChangeLog);
 
             return proposedTransactionChangeLog;
 
         }
 
-        private List<TransactionDto> GetTransactionsForProposedTransactionChange(DateTime startDate, DateTime endDate)
+        private List<TransactionDto> GetTransactionsForProposedTransactionChange(DateOnly startDate, DateOnly endDate)
         {
             return transactionRepository
                 .GetTransactionsForProposedTransactionChange(startDate, endDate)
@@ -35,17 +36,23 @@ namespace Services.Common
                 .ToList();
         }
 
-        private static Tuple<DateTime, DateTime> GetDateRangeOfInputTransactions(List<InputTransactionDto> inputs)
+        private static Tuple<DateOnly, DateOnly> GetDateRangeOfInputTransactions(List<TransactionDto> inputs)
         {
-            var startDate = inputs.Max(i => i.TransactionDate);
-            var endDate = inputs.Min(i => i.TransactionDate);
+            var startDate = inputs.Max(i => i.Date);
+            var endDate = inputs.Min(i => i.Date);
             
             return Tuple.Create(startDate, endDate);
         }
 
         private TransactionDto MapTransactionToDto(Transaction transaction) 
         {
-            throw new NotImplementedException();
+            return new TransactionDto
+            {
+                Id = transaction.Id,
+                CreatedOn = transaction.CreatedOn,
+                Date = transaction.Date,
+                Amount = transaction.Amount
+            };
         }
 
 

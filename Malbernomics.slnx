@@ -4,6 +4,9 @@
     <Project Path="DataAccess/DataAccess.Abstractions.csproj" Id="748bb3ba-3527-4ff3-aa1c-db7728e2a6d7" />
     <Project Path="Database.ORM.Setup/Database.ORM.Setup.csproj" Id="c9d75664-fac9-4e00-8f10-ba8b6bd276bd" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="V1.txt" />
+  </Folder>
   <Project Path="Common/Common.csproj" />
   <Project Path="Services/Services.csproj" />
   <Project Path="Testing/Testing.csproj" />

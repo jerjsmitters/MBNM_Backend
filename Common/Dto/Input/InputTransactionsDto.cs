@@ -7,6 +7,6 @@ namespace Common.Dto.Input
     public record InputTransactionsDto
     {
         public DateTime InputDateTime { get; init; }
-        public List<InputTransactionDto> Transactions { get; init; }
+        public List<TransactionDto> Transactions { get; init; }
     }
 }

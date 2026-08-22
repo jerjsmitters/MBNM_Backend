@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Common.Enums
 {
-    public enum ProposedChangeOperation
+    public enum ChangeRequestOperation
     {
         ADD,
         DELETE
