@@ -1,5 +1,5 @@
 ﻿using Common.Enums;
-using DataAccess.Entities.Base;
+using DataAccess.Models.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;

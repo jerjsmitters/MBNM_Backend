@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/DataAccess/">
     <Project Path="DataAccess.EF/DataAccess.EF.csproj" Id="55a34e88-b77f-4b37-a8ee-bb461868f71d" />
-    <Project Path="DataAccess/DataAccess.Models.csproj" Id="748bb3ba-3527-4ff3-aa1c-db7728e2a6d7" />
+    <Project Path="DataAccess.Models/DataAccess.Models.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="V0_TODO.txt" />

@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\DataAccess.EF\DataAccess.EF.csproj" />
-    <ProjectReference Include="..\DataAccess\DataAccess.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

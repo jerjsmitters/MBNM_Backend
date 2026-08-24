@@ -10,8 +10,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.9" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.Models.csproj" />
+    <ProjectReference Include="..\DataAccess.Models\DataAccess.Models.csproj" />
   </ItemGroup>
 
 </Project>
