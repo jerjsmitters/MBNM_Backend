@@ -1,40 +1,46 @@
 ﻿using Common.Dto;
 using Common.Enums;
-using DataAccess.Abstractions.Domain;
-using DataAccess.Abstractions.Repositories;
+using Common.Extensions;
+using DataAccess.EF.DbContextImpl;
+using DataAccess.Models.ChangeRequest;
+using Microsoft.EntityFrameworkCore;
 using Services.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Services.Common
 {
     //TBI
-    internal class ChangeRequestService(ITransactionMatchingService transactionMatchingService, IChangeRequestRepository changeRequestRepository) : IChangeRequestService
+    internal class ChangeRequestService(EfDbContext dbContext, ITransactionMatchingService transactionMatchingService) : IChangeRequestService
     {
 
         //pre-approval process
         public ChangeRequestDto GenerateChangeRequest(List<TransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
             var proposedChanges = new List<ChangeRequestTransactionDto>();
+            //TBI 
 
-            //find what's missing from each dataset + map to proposed change
-            var missingFromInputTrans = persistedTransactions
-                .Where(pt => inputTransactions.Any(it => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
-                .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.ADD));
+            //1) missing from persisted
+            ////var missingFromInputTrans = persistedTransactions
+            ////    .Where(pt => inputTransactions.Any(it => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
+            ////    .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.ADD));
 
-            proposedChanges.AddRange(missingFromInputTrans);
+            ////proposedChanges.AddRange(missingFromInputTrans);
             
+            //2) missing from input
+            ////var missingFromPersistedTrans = inputTransactions
+            ////    .Where(it => persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
+            ////    .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.DELETE));
 
-            var missingFromPersistedTrans = inputTransactions
-                .Where(it => persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
-                .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.DELETE));
+            ////proposedChanges.AddRange(missingFromPersistedTrans);
 
-            proposedChanges.AddRange(missingFromPersistedTrans);
+            //3) persisted but values changed
+
 
 
             return new ChangeRequestDto
@@ -53,46 +59,60 @@ namespace Services.Common
 
             var changeRequestEntity = MapToChangeRequestEntity(changeRequest);
 
-            var savedRequest = await changeRequestRepository.AddAsync(changeRequestEntity);
+            var savedRequest = await dbContext.AddAsync(changeRequestEntity);
+            await dbContext.SaveChangesAsync();
 
-            return MapToChangeRequestDto(savedRequest);
+            return MapToChangeRequestDto(savedRequest.Entity);
         }
 
 
         //approval process
         public async Task CommitChangeRequest(int changeRequestId)
         {
-            var changeRequest = await changeRequestRepository.GetByIdAsync(changeRequestId);
-            if (changeRequest == null)
-            {
-                throw new InvalidOperationException($"Change Request with Id = {changeRequestId} does not exist");
-            }
+            await using var dbTransaction = await dbContext.Database.BeginTransactionAsync();
 
-            var deleteRequests = changeRequest.ProposedChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.DELETE);
-            foreach (var deleteRequest in deleteRequests) 
-            {
-                //delete op 
-            }
+            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId);
 
+            //TBI 
 
-            var addRequests = changeRequest.ProposedChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.ADD);
-            foreach (var deleteRequest in deleteRequests)
-            {
-                //add op 
-            }
+            //if (changeRequest == null || ListHelpers.IsNullOrEmpty(changeRequest.ProposedAddUpdateChanges))
+            //{
+            //    throw new InvalidOperationException($"Change Request with Id = {changeRequestId} either doesn't exist or have any changes to commit");
+            //}
+
+            //var addRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.ADD);
+            //foreach (var deleteRequest in deleteRequests)
+            //{
+            //    //add op 
+            //}
+
+            //var updatedRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation)
+
+            //var deleteRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.DELETE);
+            //foreach (var deleteRequest in deleteRequests) 
+            //{
+            //    deleteRequest.Transaction.Deleted = true;
+            //}
+
+            
+
+            dbTransaction.Commit();
         }
 
         public async Task DenyChangeRequest(int changeRequestId)
         {
-            var changeRequest = await changeRequestRepository.GetByIdAsync(changeRequestId);
+            await using var dbTransaction = await dbContext.Database.BeginTransactionAsync();
+
+            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId);
             if (changeRequest == null)
             {
                 throw new InvalidOperationException($"Change Request with Id = {changeRequestId} does not exist");
             }
 
-            changeRequest.ProposedChanges.ForEach(pc => pc.RequestState = ChangeRequestState.DENIED);
+            //TBI
+            //changeRequest.ProposedChanges.ForEach(pc => pc.RequestState = ChangeRequestState.DENIED);
 
-            await changeRequestRepository.UpdateAsync(changeRequest);
+            dbTransaction.Commit();
         }
 
 

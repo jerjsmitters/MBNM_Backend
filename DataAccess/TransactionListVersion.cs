@@ -1,9 +1,9 @@
-﻿using DataAccess.Abstractions.Domain.Base;
+﻿using DataAccess.Entities.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Abstractions.Domain
+namespace DataAccess.Models
 {
     public class TransactionListVersion : EntityBase
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Abstractions.Domain.Base
+namespace DataAccess.Entities.Base
 {
     public abstract class EntityBase
     {

@@ -1,3 +1,0 @@
-1) See how using DbSet/DbContext instead of Repository pattern plays out + transactions
-2) Versioning for easy rollbacks to previous versions (Change Requests)
-3) Unit testing all services thus far. 

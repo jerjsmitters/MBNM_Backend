@@ -1,14 +1,14 @@
 ﻿using Common.Dto;
 using Common.Dto.Input;
-using DataAccess.Abstractions.Domain;
-using DataAccess.Abstractions.Repositories;
+using DataAccess.EF.DbContextImpl;
+using DataAccess.Models;
 using Services.Common.Interfaces;
 using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Common
 {
-    public class TransactionService(ITransactionRepository transactionRepository, IChangeRequestService proposedTransactionChangeService) : ITransactionService
+    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService) : ITransactionService
     {
         public ChangeRequestDto AddTransactions(InputTransactionsDto dataInput)
         {
@@ -19,7 +19,7 @@ namespace Services.Common
             
             var dateRange = GetDateRangeOfInputTransactions(dataInput.Transactions);
 
-            List<TransactionDto> persistedTransactionsForDateRange = GetTransactionsForProposedTransactionChange(dateRange.Item1, dateRange.Item2);
+            List<TransactionDto> persistedTransactionsForDateRange = GetTransactionsForDateRange(dateRange.Item1, dateRange.Item2);
 
             var proposedTransactionChangeLog = proposedTransactionChangeService.GenerateChangeRequest(dataInput.Transactions, persistedTransactionsForDateRange);
             proposedTransactionChangeService.SaveChangeRequest(proposedTransactionChangeLog);
@@ -28,10 +28,13 @@ namespace Services.Common
 
         }
 
-        private List<TransactionDto> GetTransactionsForProposedTransactionChange(DateOnly startDate, DateOnly endDate)
+        private List<TransactionDto> GetTransactionsForDateRange(DateOnly startDate, DateOnly endDate)
         {
-            return transactionRepository
-                .GetTransactionsForProposedTransactionChange(startDate, endDate)
+            return dbContext
+                .Transactions
+                .Where(t => t.Date <= startDate && t.Date >= endDate)
+                .OrderBy(t => t.Date)
+                .ThenBy(t => t.Sequence)
                 .Select(t => MapTransactionToDto(t))
                 .ToList();
         }

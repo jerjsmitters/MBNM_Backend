@@ -17,8 +17,6 @@ namespace Services.Common
 
             return transactionOne.Date == transactionTwo.Date
                 && transactionOne.Sequence == transactionTwo.Sequence;
-
-            //how do we handle the two transactions having different references and amounts??
         }
     }
 }
