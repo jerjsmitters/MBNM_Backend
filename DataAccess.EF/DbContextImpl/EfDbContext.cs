@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using Common.Dto.ChangeRequest;
+using DataAccess.Models;
 using DataAccess.Models.ChangeRequest;
 using DataAccess.Models.ChangeRequest.Line;
 using Microsoft.EntityFrameworkCore;

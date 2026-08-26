@@ -13,8 +13,29 @@ namespace Services.Common
             if (transactionOne == null || transactionTwo == null)
             {
                 return false;
-            };
+            }
+            return InputTransactionMatchesPersistedInternal(transactionOne, transactionTwo);
+        }
 
+        public bool NeedsUpdating(TransactionDto inputTranscation, TransactionDto persistedDto)
+        {
+            if (inputTranscation == null || persistedDto == null)
+            {
+                return false;
+            }
+
+            var valueHasChanged = inputTranscation.Reference != persistedDto.Reference
+                    || inputTranscation.Amount != persistedDto.Amount;
+
+            return InputTransactionMatchesPersistedInternal(inputTranscation, persistedDto)
+                && valueHasChanged;
+
+
+        }
+
+
+        private bool InputTransactionMatchesPersistedInternal(TransactionDto transactionOne, TransactionDto transactionTwo)
+        {
             return transactionOne.Date == transactionTwo.Date
                 && transactionOne.Sequence == transactionTwo.Sequence;
         }

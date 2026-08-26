@@ -1,4 +1,5 @@
 ﻿using Common.Dto;
+using Common.Dto.ChangeRequest;
 using Common.Dto.Input;
 using DataAccess.EF.DbContextImpl;
 using DataAccess.Models;
@@ -8,7 +9,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Common
 {
-    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService) : ITransactionService
+    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService, IMappingService mappingService) : ITransactionService
     {
         public ChangeRequestDto AddTransactions(InputTransactionsDto dataInput)
         {
@@ -35,7 +36,7 @@ namespace Services.Common
                 .Where(t => t.Date <= startDate && t.Date >= endDate)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.Sequence)
-                .Select(t => MapTransactionToDto(t))
+                .Select(t => mappingService.MapTransactionToDto(t))
                 .ToList();
         }
 
@@ -46,18 +47,5 @@ namespace Services.Common
             
             return Tuple.Create(startDate, endDate);
         }
-
-        private TransactionDto MapTransactionToDto(Transaction transaction) 
-        {
-            return new TransactionDto
-            {
-                Id = transaction.Id,
-                CreatedOn = transaction.CreatedOn,
-                Date = transaction.Date,
-                Amount = transaction.Amount
-            };
-        }
-
-
     }
 }

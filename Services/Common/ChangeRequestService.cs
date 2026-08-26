@@ -1,4 +1,7 @@
 ﻿using Common.Dto;
+using Common.Dto.ChangeRequest;
+using Common.Dto.ChangeRequest.Line;
+using Common.Dto.ChangeRequest.Line.Base;
 using Common.Dto.Input;
 using Common.Enums;
 using Common.Extensions;
@@ -20,59 +23,89 @@ using System.Threading.Tasks;
 namespace Services.Common
 {
     //TBI
-    internal class ChangeRequestService(EfDbContext dbContext, ITransactionMatchingService transactionMatchingService) : IChangeRequestService
+    internal class ChangeRequestService(EfDbContext dbContext, ITransactionMatchingService transactionMatchingService, IMappingService mappingService) : IChangeRequestService
     {
 
         //pre-approval process
         public ChangeRequestDto GenerateChangeRequest(List<TransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
-            var proposedChanges = new List<ChangeRequestTransactionDto>();
-            //TBI 
 
-            //1) missing from persisted
-            ////var missingFromInputTrans = persistedTransactions
-            ////    .Where(pt => inputTransactions.Any(it => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
-            ////    .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.ADD));
+            //1) Add operations
+            var needToBeAdded = inputTransactions
+                .Where(it => !persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(it, pt)))
+                .Select(
+                    t => new ChangeRequestCreateLineDto 
+                    {
+                        Amount = t.Amount,
+                        Date = t.Date,
+                        Reference = t.Reference,
+                        Sequence = t.Sequence,
+                        RequestState = ChangeRequestState.PENDING
+                    }
+                )
+                .ToList();
 
-            ////proposedChanges.AddRange(missingFromInputTrans);
-            
-            //2) missing from input
-            ////var missingFromPersistedTrans = inputTransactions
-            ////    .Where(it => persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
-            ////    .Select(t => new ChangeRequestTransactionDto(t, ChangeRequestOperation.DELETE));
 
-            ////proposedChanges.AddRange(missingFromPersistedTrans);
+            //2) Update Operations
+            var needToBeUpdate = inputTransactions
+                .Where(it => persistedTransactions.Any(pt => transactionMatchingService.NeedsUpdating(it, pt))) 
+                .Select(
+                    t => new ChangeRequestUpdateLineDto
+                    {
+                        Amount = t.Amount,
+                        Date = t.Date,
+                        Reference = t.Reference,
+                        Sequence = t.Sequence,
+                        RequestState = ChangeRequestState.PENDING
+                    }
+                )
+                .ToList();
 
             //3) persisted but values changed
+            var needToDelete = persistedTransactions
+                .Where(pt => !inputTransactions.Any(it => transactionMatchingService.InputTransactionMatchesPersisted(pt, it)))
+                .Select(
+                    t => new ChangeRequestDeleteLineDto
+                    {
+                        Transaction = t,
+                        RequestState = ChangeRequestState.PENDING
+                    }
+                )
+                .ToList();
 
 
 
             return new ChangeRequestDto
             {
-                ProposedChanges = proposedChanges
+                CreatedOn = DateTime.UtcNow,
+                CreateLines = needToBeAdded,
+                DeleteLines = needToDelete,
+                UpdateLines = needToBeUpdate
             };
         }
 
         public async Task<ChangeRequestDto> SaveChangeRequest(ChangeRequestDto changeRequest)
         {
-            if (changeRequest?.ProposedChanges == null || changeRequest.ProposedChanges.Count == 0)
+            if (changeRequest == null || GetChangeRequestLineDtos(changeRequest).Count == 0)
             {
-                var illegalArgument = changeRequest == null ? nameof(ChangeRequestDto) : nameof(ChangeRequestDto.ProposedChanges);
-                throw new ArgumentException(illegalArgument);
+                throw new ArgumentException("No change request lines" ,nameof(changeRequest));
             }
 
-            var changeRequestEntity = MapToChangeRequestEntity(changeRequest);
+            var changeRequestEntity = mappingService.MapChangeRequestDtoToEntity(changeRequest);
 
             var savedRequest = await dbContext.AddAsync(changeRequestEntity);
             await dbContext.SaveChangesAsync();
 
-            return MapToChangeRequestDto(savedRequest.Entity);
+            return mappingService.MapChangeRequestToDto(savedRequest.Entity);
         }
 
 
         //approval process
-        public async Task CommitChangeRequest(int changeRequestId)
+        public async Task<List<ChangeRequestCommitResult>> CommitChangeRequest(int changeRequestId)
         {
+            var results = new List<ChangeRequestCommitResult>();
+            ChangeRequestCommitResult result;
+            
             await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
             var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId) 
@@ -81,7 +114,7 @@ namespace Services.Common
             var changeRequestLines = GetChangeRequestLines(changeRequest);
             if (NothingToProcess(changeRequestLines))
             {
-                return;
+                return [];
             }
 
             //add requests
@@ -90,15 +123,35 @@ namespace Services.Common
             {
                 var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
                 addRequests.Add(transactionToAdd);
+
+                result = new ChangeRequestCommitResult
+                {
+                    OperationPerformed = ChangeRequestCommitOperation.ADD,
+                    TransactionBefore = null,
+                    TransactionAfter = mappingService.MapTransactionToDto(transactionToAdd)
+                };
+
+                results.Add(result);
             }
 
             await dbContext.Transactions.AddRangeAsync(addRequests);
 
 
             //update requests
+            TransactionDto transactionBeforeUpdate;
             foreach (ChangeRequestUpdateLine updateRequest in changeRequest.UpdateLines ?? [])
             {
+                transactionBeforeUpdate = mappingService.MapTransactionToDto(updateRequest.Transaction);
                 ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
+
+                result = new ChangeRequestCommitResult
+                {
+                    OperationPerformed = ChangeRequestCommitOperation.UPDATE,
+                    TransactionBefore = transactionBeforeUpdate,
+                    TransactionAfter = mappingService.MapTransactionToDto(updateRequest.Transaction)
+                };
+
+                results.Add(result);
             }
 
 
@@ -106,10 +159,20 @@ namespace Services.Common
             foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
             {
                 deleteRequest.Transaction.Deleted = true;
+                result = new ChangeRequestCommitResult
+                {
+                    OperationPerformed = ChangeRequestCommitOperation.DELETE,
+                    TransactionBefore = mappingService.MapTransactionToDto(deleteRequest.Transaction),
+                    TransactionAfter = null
+                };
+
+                results.Add(result);
             }
 
             await dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            return results;
         }
 
         public async Task DenyChangeRequest(int changeRequestId)
@@ -135,15 +198,6 @@ namespace Services.Common
 
 
 
-        private ChangeRequest MapToChangeRequestEntity(ChangeRequestDto changeRequest)
-        {
-            return null;
-        }
-
-        private ChangeRequestDto MapToChangeRequestDto(ChangeRequest changeRequest)
-        {
-            return null;
-        }
 
         private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine)
         {
@@ -169,6 +223,15 @@ namespace Services.Common
         }
 
         private static List<ChangeRequestLine> GetChangeRequestLines(ChangeRequest changeRequest)
+        {
+            return [
+                .. changeRequest?.CreateLines ?? [],
+                .. changeRequest?.UpdateLines ?? [],
+                .. changeRequest?.DeleteLines ?? []
+            ];
+        }
+
+        private static List<ChangeRequestLineDto> GetChangeRequestLineDtos(ChangeRequestDto changeRequest)
         {
             return [
                 .. changeRequest?.CreateLines ?? [],
