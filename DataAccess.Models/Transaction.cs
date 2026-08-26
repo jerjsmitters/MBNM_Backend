@@ -7,9 +7,11 @@ namespace DataAccess.Models
 {
     public class Transaction : EntityBase
     {
-        public decimal Amount { get; set;  }
+        public decimal Amount { get; set; }
         public DateOnly Date { get; set; }
         public short Sequence { get; set; }
+        public string Reference { get; set; }
+
         public bool Deleted { get; set; }
         public TransactionCategory Category { get; set; }
         public List<TransactionEvidence> Evidence { get; set; }

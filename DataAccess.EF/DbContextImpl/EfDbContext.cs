@@ -1,5 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.ChangeRequest;
+using DataAccess.Models.ChangeRequest.Line;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,9 @@ namespace DataAccess.EF.DbContextImpl
     public class EfDbContext(DbContextOptions<EfDbContext> dbContextOptions) : DbContext(dbContextOptions)
     {
         public DbSet<ChangeRequest> ChangeRequests { get; set; }
-       // public DbSet<ChangeRequestEntryDelete> ChangeRequestTransactions { get; set; } TBI
+        public DbSet<ChangeRequestCreateLine> ChangeRequestCreateLines { get; set; }
+        public DbSet<ChangeRequestUpdateLine> ChangeRequestUpdateLines { get; set; }
+        public DbSet<ChangeRequestDeleteLine> ChangeRequestDeleteLines { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionCategory> TransactionCategories { get; set; }
         public DbSet<TransactionEvidence> TransactionEvidence { get; set; }

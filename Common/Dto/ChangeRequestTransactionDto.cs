@@ -7,7 +7,7 @@ namespace Common.Dto
 {
     public record ChangeRequestTransactionDto
     {
-        public ChangeRequestTransactionDto(TransactionDto transaction, ChangeRequestOperation proposedChangeOperation)
+        public ChangeRequestTransactionDto(TransactionDto transaction, ChangeRequestCommitOperation proposedChangeOperation)
         {
             this.Transaction = transaction;
             this.ProposedChangeOperation = proposedChangeOperation;
@@ -15,6 +15,6 @@ namespace Common.Dto
 
         public int? Id { get; init; }
         public TransactionDto Transaction { get; init; }
-        public ChangeRequestOperation ProposedChangeOperation { get; init; }
+        public ChangeRequestCommitOperation ProposedChangeOperation { get; init; }
     }
 }

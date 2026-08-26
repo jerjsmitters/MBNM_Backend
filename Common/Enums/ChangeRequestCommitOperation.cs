@@ -4,9 +4,10 @@ using System.Text;
 
 namespace Common.Enums
 {
-    public enum ChangeRequestOperation
+    public enum ChangeRequestCommitOperation
     {
         ADD,
+        UPDATE,
         DELETE
     }
 }

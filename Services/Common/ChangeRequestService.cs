@@ -1,8 +1,12 @@
 ﻿using Common.Dto;
+using Common.Dto.Input;
 using Common.Enums;
 using Common.Extensions;
 using DataAccess.EF.DbContextImpl;
+using DataAccess.Models;
 using DataAccess.Models.ChangeRequest;
+using DataAccess.Models.ChangeRequest.Line;
+using DataAccess.Models.ChangeRequest.Line.Base;
 using Microsoft.EntityFrameworkCore;
 using Services.Common.Interfaces;
 using System;
@@ -69,51 +73,66 @@ namespace Services.Common
         //approval process
         public async Task CommitChangeRequest(int changeRequestId)
         {
-            await using var dbTransaction = await dbContext.Database.BeginTransactionAsync();
+            await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId);
+            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId) 
+                ?? throw new InvalidOperationException($"Change Request with Id = {changeRequestId} doesn't exist.");
 
-            //TBI 
+            var changeRequestLines = GetChangeRequestLines(changeRequest);
+            if (NothingToProcess(changeRequestLines))
+            {
+                return;
+            }
 
-            //if (changeRequest == null || ListHelpers.IsNullOrEmpty(changeRequest.ProposedAddUpdateChanges))
-            //{
-            //    throw new InvalidOperationException($"Change Request with Id = {changeRequestId} either doesn't exist or have any changes to commit");
-            //}
+            //add requests
+            var addRequests = new List<Transaction>();
+            foreach (ChangeRequestCreateLine addRequest in changeRequest.CreateLines ?? [])
+            {
+                var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
+                addRequests.Add(transactionToAdd);
+            }
 
-            //var addRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.ADD);
-            //foreach (var deleteRequest in deleteRequests)
-            //{
-            //    //add op 
-            //}
+            await dbContext.Transactions.AddRangeAsync(addRequests);
 
-            //var updatedRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation)
 
-            //var deleteRequests = changeRequest.ProposedAddUpdateChanges.Where(pc => pc.ProposedChangeOperation == ChangeRequestOperation.DELETE);
-            //foreach (var deleteRequest in deleteRequests) 
-            //{
-            //    deleteRequest.Transaction.Deleted = true;
-            //}
+            //update requests
+            foreach (ChangeRequestUpdateLine updateRequest in changeRequest.UpdateLines ?? [])
+            {
+                ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
+            }
 
-            
 
-            dbTransaction.Commit();
+            //delete requests 
+            foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
+            {
+                deleteRequest.Transaction.Deleted = true;
+            }
+
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
 
         public async Task DenyChangeRequest(int changeRequestId)
         {
-            await using var dbTransaction = await dbContext.Database.BeginTransactionAsync();
+            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId) 
+                ?? throw new InvalidOperationException($"Change Request with Id = {changeRequestId} doesn't exist.");
 
-            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId);
-            if (changeRequest == null)
+            var changeRequestLines = GetChangeRequestLines(changeRequest);
+            if (NothingToProcess(changeRequestLines))
             {
-                throw new InvalidOperationException($"Change Request with Id = {changeRequestId} does not exist");
+                return;
             }
 
-            //TBI
-            //changeRequest.ProposedChanges.ForEach(pc => pc.RequestState = ChangeRequestState.DENIED);
 
-            dbTransaction.Commit();
+            foreach (var changeRequestLine in changeRequestLines)
+            {
+                changeRequestLine.RequestState = ChangeRequestState.DENIED;
+            }
+
+            await dbContext.SaveChangesAsync();
         }
+
+
 
 
         private ChangeRequest MapToChangeRequestEntity(ChangeRequestDto changeRequest)
@@ -124,7 +143,38 @@ namespace Services.Common
         private ChangeRequestDto MapToChangeRequestDto(ChangeRequest changeRequest)
         {
             return null;
+        }
 
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine)
+        {
+            return ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+        }
+
+
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
+        {
+
+            return transaction;
+        }
+
+
+        private static bool NothingToProcess(List<ChangeRequestLine> requestLines)
+        {
+            if (requestLines.Count == 0)
+            {
+                return true;
+            }
+
+            return !requestLines.Any(crl => crl.RequestState == ChangeRequestState.PENDING);
+        }
+
+        private static List<ChangeRequestLine> GetChangeRequestLines(ChangeRequest changeRequest)
+        {
+            return [
+                .. changeRequest?.CreateLines ?? [],
+                .. changeRequest?.UpdateLines ?? [],
+                .. changeRequest?.DeleteLines ?? []
+            ];
         }
     }
 }
