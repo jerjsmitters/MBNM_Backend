@@ -11,7 +11,7 @@ namespace Services.Common.Interfaces
         ChangeRequestDto GenerateChangeRequest(List<TransactionDto> inputTransactions, List<TransactionDto> persistedTransactions);
         Task<ChangeRequestDto> SaveChangeRequest(ChangeRequestDto proposedChanges);
 
-        Task<List<ChangeRequestCommitResult>> CommitChangeRequest(int changeRequestId);
+        Task<List<ChangeRequestCommitResultDto>> CommitChangeRequest(int changeRequestId);
 
         Task DenyChangeRequest(int requestId);
     }

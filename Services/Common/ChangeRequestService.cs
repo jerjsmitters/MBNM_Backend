@@ -101,10 +101,10 @@ namespace Services.Common
 
 
         //approval process
-        public async Task<List<ChangeRequestCommitResult>> CommitChangeRequest(int changeRequestId)
+        public async Task<List<ChangeRequestCommitResultDto>> CommitChangeRequest(int changeRequestId)
         {
-            var results = new List<ChangeRequestCommitResult>();
-            ChangeRequestCommitResult result;
+            var results = new List<ChangeRequestCommitResultDto>();
+            ChangeRequestCommitResultDto result;
             
             await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
@@ -124,7 +124,7 @@ namespace Services.Common
                 var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
                 addRequests.Add(transactionToAdd);
 
-                result = new ChangeRequestCommitResult
+                result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.ADD,
                     TransactionBefore = null,
@@ -143,8 +143,9 @@ namespace Services.Common
             {
                 transactionBeforeUpdate = mappingService.MapTransactionToDto(updateRequest.Transaction);
                 ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
+                updateRequest.RequestState = ChangeRequestState.COMMITED;
 
-                result = new ChangeRequestCommitResult
+                result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.UPDATE,
                     TransactionBefore = transactionBeforeUpdate,
@@ -159,7 +160,9 @@ namespace Services.Common
             foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
             {
                 deleteRequest.Transaction.Deleted = true;
-                result = new ChangeRequestCommitResult
+                deleteRequest.RequestState = ChangeRequestState.COMMITED;
+
+                result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.DELETE,
                     TransactionBefore = mappingService.MapTransactionToDto(deleteRequest.Transaction),
@@ -205,9 +208,11 @@ namespace Services.Common
         }
 
 
-        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
+        private static Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
         {
-
+            transaction.Sequence = changeRequestLine.Sequence;
+            transaction.Reference = changeRequestLine.Reference;
+            transaction.Amount = changeRequestLine.Amount;
             return transaction;
         }
 

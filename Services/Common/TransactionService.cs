@@ -5,7 +5,6 @@ using DataAccess.EF.DbContextImpl;
 using DataAccess.Models;
 using Services.Common.Interfaces;
 using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Common
 {
