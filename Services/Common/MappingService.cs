@@ -1,7 +1,7 @@
 ﻿using Common.Dto;
 using Common.Dto.ChangeRequest;
-using DataAccess.Models;
-using DataAccess.Models.ChangeRequest;
+using DataAccess.Models.ChangeRequestEntities;
+using DataAccess.Models.Transactions;
 using Services.Common.Interfaces;
 using System;
 using System.Collections.Generic;

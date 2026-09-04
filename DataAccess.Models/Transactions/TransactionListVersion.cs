@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Models
+namespace DataAccess.Models.Transactions
 {
     public class TransactionListVersion : EntityBase
     {
-        //TBI: ONCE FIGURED OUT HOW ITS GONNA WORK 
-        public List<Transaction> Transactions { get; set; }
+        ////TBI: ONCE FIGURED OUT HOW ITS GONNA WORK 
+        //public List<Transaction> Transactions { get; set; }
     }
 }

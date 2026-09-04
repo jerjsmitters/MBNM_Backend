@@ -1,12 +1,11 @@
 ﻿using Common.Enums;
 using DataAccess.Models.Base;
-using DataAccess.Models.ChangeRequest.Line;
-using DataAccess.Models.ChangeRequest.Line.Base;
+using DataAccess.Models.ChangeRequestEntities.Line;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Models.ChangeRequest
+namespace DataAccess.Models.ChangeRequestEntities
 {
     public class ChangeRequest : EntityBase
     {

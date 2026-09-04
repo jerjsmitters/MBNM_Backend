@@ -1,5 +1,6 @@
-1) Need to finalise implementation of create,update and delete
-2) Fully implement transaction/acceptance flow + Use DbContext directly in implemented services
-3) Implement Category assignment + crud ops
-4) Change Request Versioning/Rollback
-5) Unit testing all services thus far. 
+1) Need to finalise implementation of create,update and delete DONE
+2) Fully implement transaction/acceptance flow + Use DbContext directly in implemented services DONE
+3) Console App
+4) Unit testing all services thus far + general testing
+5) Implement Category assignment + crud ops
+6) Change Request Versioning/Rollback

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Models.ChangeRequest.Line.Base
+namespace DataAccess.Models.Base
 {
     public abstract class TransactionDataChangeRequestLine : ChangeRequestLine
     {

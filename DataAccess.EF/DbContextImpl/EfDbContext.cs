@@ -1,7 +1,7 @@
 ﻿using Common.Dto.ChangeRequest;
-using DataAccess.Models;
-using DataAccess.Models.ChangeRequest;
-using DataAccess.Models.ChangeRequest.Line;
+using DataAccess.Models.ChangeRequestEntities;
+using DataAccess.Models.ChangeRequestEntities.Line;
+using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
