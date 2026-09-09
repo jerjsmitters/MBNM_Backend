@@ -18,7 +18,7 @@ namespace DataAccess.EF.DbContextImpl
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionCategory> TransactionCategories { get; set; }
         public DbSet<TransactionEvidence> TransactionEvidence { get; set; }
-        public DbSet<TransactionListVersion> TransactionListVersions { get; set; }
+        public DbSet<MatchingCriteria> MatchingCriteria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,15 +1,18 @@
-﻿using Common.Enums;
+﻿using Common.Dto.Transactions;
+using Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Common.Dto.ChangeRequest.Line.Base
 {
-    public abstract class TransactionDataChangeRequestLineDto : ChangeRequestLineDto
+    public abstract record TransactionDataChangeRequestLineDto : ChangeRequestLineDto
     {
-        public decimal Amount { get; set; }
-        public DateOnly Date { get; set; }
-        public short Sequence { get; set; }
-        public string Reference { get; set; }
+        public decimal ProposedAmount { get; init; }
+        public DateOnly ProposedDate { get; init; }
+        public int ProposedSequence { get; init; }
+        public string ProposedReference { get; init; }
+        public List<TransactionCategoryDto> ProposedCategories { get; init; }
+        public List<TransactionPropertyDto> ProposedProperties { get; init; }
     }
 }

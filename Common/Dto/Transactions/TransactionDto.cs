@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Dto
+namespace Common.Dto.Transactions
 {
     public record TransactionDto : EntityBaseDto
     {
@@ -11,5 +11,7 @@ namespace Common.Dto
         public short Sequence { get; set; }
         public decimal Amount { get; init; }
         public string Reference { get; init; }
+        public TransactionCategoryDto Category { get; init; }
+        public List<TransactionPropertyDto> AssociatedProperties { get; init; }
     }
 }

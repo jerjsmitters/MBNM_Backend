@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Services.Common.Interfaces
+namespace Services.Interfaces.Transactions
 {
     //TBI
-    internal interface ITransactionCategoryService
+    public interface ITransactionEvidenceService
     {
     }
 }

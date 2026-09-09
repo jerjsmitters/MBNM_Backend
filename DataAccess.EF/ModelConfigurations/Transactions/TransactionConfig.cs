@@ -30,7 +30,11 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            builder.HasOne(b => b.Category);
+            // FKs
+            builder.HasMany(b => b.Properties);
+
+            builder.HasMany(b => b.Categories);
+
             builder
                 .HasMany(b => b.Evidence)
                 .WithOne(b => b.Transaction);

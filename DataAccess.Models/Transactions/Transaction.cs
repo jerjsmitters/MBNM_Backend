@@ -13,7 +13,8 @@ namespace DataAccess.Models.Transactions
         public string Reference { get; set; }
 
         public bool Deleted { get; set; }
-        public TransactionCategory Category { get; set; }
+        public List<TransactionCategory> Categories { get; set; }
+        public List<TransactionProperty> Properties { get; set; }
         public List<TransactionEvidence> Evidence { get; set; }
     }
 }

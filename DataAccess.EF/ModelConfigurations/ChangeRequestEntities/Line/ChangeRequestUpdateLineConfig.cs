@@ -9,6 +9,8 @@ namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities.Line
     {
         new public void Configure(EntityTypeBuilder<ChangeRequestUpdateLine> builder)
         {
+            builder.HasMany(x => x.TransactionProperties);
+            builder.HasMany(x => x.TransactionCategories);
             builder.HasOne(x => x.Transaction);
             base.Configure(builder);
         }

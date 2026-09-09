@@ -2,7 +2,7 @@
 
 namespace Common.Dto.ChangeRequest.Line
 {
-    public class ChangeRequestCreateLineDto : TransactionDataChangeRequestLineDto
+    public record ChangeRequestCreateLineDto : TransactionDataChangeRequestLineDto
     {
     }
 }

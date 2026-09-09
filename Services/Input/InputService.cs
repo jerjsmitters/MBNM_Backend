@@ -1,19 +1,18 @@
 ﻿using Common.Dto.Input;
-using Services.Common;
-using Services.Input.Parsing;
+using Services.Interfaces.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Services.Input
 {
-    internal class InputService : IInputService
+    public class InputService : IInputService
     {
         private IParsingService _parsingService;
-        private TransactionService _transactionService;
+        private ChangeRequestService _changeRequestService;
 
 
-        public void AddTransactions(string inputData)
+        public async Task AddTransactions(string inputData)
         {
             if (string.IsNullOrWhiteSpace(inputData))
             {
@@ -27,7 +26,7 @@ namespace Services.Input
                 return;
             }
 
-            _transactionService.AddTransactions(parsedInputData);
+            await _changeRequestService.GenerateChangeRequestFromInputTransactions(parsedInputData);
         }
     }
 }

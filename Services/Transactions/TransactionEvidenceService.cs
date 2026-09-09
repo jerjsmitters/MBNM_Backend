@@ -1,9 +1,9 @@
-﻿using Services.Common.Interfaces;
+﻿using Services.Interfaces.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Services.Common
+namespace Services.Transactions
 {
     //TBI
     internal class TransactionEvidenceService : ITransactionEvidenceService

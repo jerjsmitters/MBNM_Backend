@@ -1,8 +1,8 @@
-﻿using Common.Dto;
-using Common.Dto.ChangeRequest;
+﻿using Common.Dto.ChangeRequest;
+using Common.Dto.Transactions;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.Transactions;
-using Services.Common.Interfaces;
+using Services.Interfaces.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,6 +31,16 @@ namespace Services.Common
         public ChangeRequestDto MapChangeRequestToDto(ChangeRequest changeRequest)
         {
             return null;
+        }
+
+        public TransactionCategoryDto MapCategoryToDto(TransactionCategory category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TransactionPropertyDto MapPropertyToDto(TransactionProperty property)
+        {
+            throw new NotImplementedException();
         }
     }
 }

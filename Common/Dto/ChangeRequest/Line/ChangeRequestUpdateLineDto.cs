@@ -1,9 +1,10 @@
 ﻿using Common.Dto.ChangeRequest.Line.Base;
+using Common.Dto.Transactions;
 
 namespace Common.Dto.ChangeRequest.Line
 {
-    public class ChangeRequestUpdateLineDto : TransactionDataChangeRequestLineDto
+    public record ChangeRequestUpdateLineDto : TransactionDataChangeRequestLineDto
     {
-        public TransactionDto Transaction { get; set; }
+        public TransactionDto TransactionToUpdate { get; set; }
     }
 }

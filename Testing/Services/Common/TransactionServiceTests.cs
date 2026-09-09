@@ -1,11 +1,10 @@
-﻿namespace Testing.Services.Common
+﻿using Services.Common;
+using Services.Common.Interfaces;
+
+namespace Testing.Services.Common
 {
     public class TransactionServiceTests
     {
-        [Fact]
-        public void Test1()
-        {
 
-        }
     }
 }

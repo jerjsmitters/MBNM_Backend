@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Services.Input.Parsing
+namespace Services.Interfaces.Input
 {
-    internal interface IParsingService
+    public interface IParsingService
     {
         public InputTransactionsDto ParseInputData(string data);
     }
