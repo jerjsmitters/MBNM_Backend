@@ -7,7 +7,7 @@ namespace DataAccess.Models.Transactions
 {
     public class TransactionCategory : EntityBase
     {
-        public int Description { get; set; }
+        public string Description { get; set; }
         public List<MatchingCriteria> MatchingCriteria { get; set; }
     }
 }

@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Common.Dto.Api
+{
+    public record ApplyChangeRequestDto
+    {
+        public int ChangeRequestId { get; init;  }
+        public List<ApplyChangeRequestLineDto> CreateLines { get; init; }
+        public List<ApplyChangeRequestLineDto> UpdateLines { get; init; }
+        public List<ApplyChangeRequestLineDto> DeleteLines { get; init; }
+    }
+}

@@ -1,4 +1,5 @@
-﻿using Common.Dto.ChangeRequest;
+﻿using Common.Dto.Api;
+using Common.Dto.ChangeRequest;
 using Common.Dto.ChangeRequest.Line;
 using Common.Dto.ChangeRequest.Line.Base;
 using Common.Dto.Input;
@@ -50,15 +51,15 @@ namespace Services.Input
         }
 
         //approval process
-        public async Task<List<ChangeRequestCommitResultDto>> CommitChangeRequest(int changeRequestId)
+        public async Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(ApplyChangeRequestDto applyChangeRequestInfo)
         {
             var results = new List<ChangeRequestCommitResultDto>();
             ChangeRequestCommitResultDto result;
 
             await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId)
-                ?? throw new InvalidOperationException($"Change Request with Id = {changeRequestId} doesn't exist.");
+            var changeRequest = await dbContext.ChangeRequests.FindAsync(applyChangeRequestInfo.ChangeRequestId)
+                ?? throw new InvalidOperationException($"Change Request with Id = {applyChangeRequestInfo.ChangeRequestId} doesn't exist.");
 
             var changeRequestLines = GetChangeRequestLines(changeRequest);
             if (NothingToProcess(changeRequestLines))
@@ -69,7 +70,13 @@ namespace Services.Input
             //add requests
             var addRequests = new List<Transaction>();
             foreach (ChangeRequestCreateLine addRequest in changeRequest.CreateLines ?? [])
-            {
+            {           
+                if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, addRequest))
+                {
+                    addRequest.RequestState = ChangeRequestState.DENIED;
+                    continue;
+                }
+
                 var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
                 addRequests.Add(transactionToAdd);
 
@@ -90,6 +97,12 @@ namespace Services.Input
             TransactionDto transactionBeforeUpdate;
             foreach (ChangeRequestUpdateLine updateRequest in changeRequest.UpdateLines ?? [])
             {
+                if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, updateRequest))
+                {
+                    updateRequest.RequestState = ChangeRequestState.DENIED;
+                    continue;
+                }
+
                 transactionBeforeUpdate = mappingService.MapTransactionToDto(updateRequest.Transaction);
                 ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
                 updateRequest.RequestState = ChangeRequestState.COMMITED;
@@ -108,6 +121,12 @@ namespace Services.Input
             //delete requests 
             foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
             {
+                if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, deleteRequest))
+                {
+                    deleteRequest.RequestState = ChangeRequestState.DENIED;
+                    continue;
+                }
+
                 deleteRequest.Transaction.Deleted = true;
                 deleteRequest.RequestState = ChangeRequestState.COMMITED;
 
@@ -126,28 +145,6 @@ namespace Services.Input
 
             return results;
         }
-
-        public async Task DenyChangeRequest(int changeRequestId)
-        {
-            var changeRequest = await dbContext.ChangeRequests.FindAsync(changeRequestId)
-                ?? throw new InvalidOperationException($"Change Request with Id = {changeRequestId} doesn't exist.");
-
-            var changeRequestLines = GetChangeRequestLines(changeRequest);
-            if (NothingToProcess(changeRequestLines))
-            {
-                return;
-            }
-
-
-            foreach (var changeRequestLine in changeRequestLines)
-            {
-                changeRequestLine.RequestState = ChangeRequestState.DENIED;
-            }
-
-            await dbContext.SaveChangesAsync();
-        }
-
-
 
 
         // ========================== PRIVATE FNS ===========================//
@@ -272,6 +269,12 @@ namespace Services.Input
                 .. changeRequest?.UpdateLines ?? [],
                 .. changeRequest?.DeleteLines ?? []
             ];
+        }
+
+        private static bool NeedToIgnoreLine(List<ApplyChangeRequestLineDto> applyChangeRequestLines, ChangeRequestLine changeRequestLine)
+        {
+            return applyChangeRequestLines.Any(cl => cl.LineId == changeRequestLine.Id && cl.DesiredState == ChangeRequestState.DENIED);
+
         }
 
         private static Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)

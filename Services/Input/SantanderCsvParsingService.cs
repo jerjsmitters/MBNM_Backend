@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Services.Input
 {
-    public class SantanderCsvParsingService : ISantanderCsvParsingService
+    public class SantanderCsvParsingService : IParsingService
     {
         private const string EMPTY_DATA_ERROR_MSG = "No data provided";
         private const string PARSING_ERROR_MSG = "Unable to parse transactions from data";

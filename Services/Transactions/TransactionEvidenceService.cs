@@ -6,7 +6,7 @@ using System.Text;
 namespace Services.Transactions
 {
     //TBI
-    internal class TransactionEvidenceService : ITransactionEvidenceService
+    public class TransactionEvidenceService : ITransactionEvidenceService
     {
     }
 }

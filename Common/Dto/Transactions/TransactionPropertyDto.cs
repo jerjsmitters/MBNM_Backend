@@ -7,5 +7,8 @@ namespace Common.Dto.Transactions
 {
     public record TransactionPropertyDto : EntityBaseDto
     {
+        public string Description { get; set; }
+        public List<MatchingCriteriaDto> MatchingCriteria { get; set; }
+
     }
 }

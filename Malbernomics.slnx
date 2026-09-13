@@ -6,6 +6,7 @@
   <Folder Name="/Solution Items/">
     <File Path="V0_TODO.txt" />
   </Folder>
+  <Project Path="API/API.csproj" Id="00e0b373-39c3-4452-8d41-fc27fb24b5e3" />
   <Project Path="Common/Common.csproj" />
   <Project Path="Services/Services.csproj" />
   <Project Path="Testing/Testing.csproj" />

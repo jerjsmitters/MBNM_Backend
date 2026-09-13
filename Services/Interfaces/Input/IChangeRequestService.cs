@@ -1,4 +1,5 @@
 ﻿using Common.Dto;
+using Common.Dto.Api;
 using Common.Dto.ChangeRequest;
 using Common.Dto.Input;
 using System;
@@ -11,8 +12,6 @@ namespace Services.Interfaces.Input
     {
         Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput);
 
-        Task<List<ChangeRequestCommitResultDto>> CommitChangeRequest(int changeRequestId);
-
-        Task DenyChangeRequest(int requestId);
+        Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(ApplyChangeRequestDto changeRequest);
     }
 }
