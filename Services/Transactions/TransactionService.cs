@@ -11,7 +11,7 @@ using System.Data;
 
 namespace Services.Transactions
 {
-    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService, IMappingService mappingService) : ITransactionService
+    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService, ITransactionMapper mappingService) : ITransactionService
     {
         
     }

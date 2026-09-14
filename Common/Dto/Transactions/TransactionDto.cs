@@ -8,10 +8,10 @@ namespace Common.Dto.Transactions
     public record TransactionDto : EntityBaseDto
     {
         public DateOnly Date { get; set; }
-        public short Sequence { get; set; }
+        public int Sequence { get; set; }
         public decimal Amount { get; init; }
         public string Reference { get; init; }
-        public TransactionCategoryDto Category { get; init; }
-        public List<TransactionPropertyDto> AssociatedProperties { get; init; }
+        public List<TransactionCategoryDto> Categories { get; init; }
+        public List<TransactionPropertyDto> Properties { get; init; }
     }
 }

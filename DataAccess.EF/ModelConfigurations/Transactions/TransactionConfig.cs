@@ -26,7 +26,7 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
                 .IsRequired();
 
             builder
-                .Property(b => b.Deleted)
+                .Property(b => b.IsDeleted)
                 .HasDefaultValue(false)
                 .IsRequired();
 

@@ -1,0 +1,44 @@
+﻿using Common.Dto.Transactions;
+using DataAccess.Models.Transactions;
+using Services.Interfaces.Common;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Services.Common
+{
+    public class TransactionCategoryMapper : ITransactionCategoryMapper
+    {
+        public TransactionCategoryDto MapCategoryToDto(TransactionCategory category)
+        {
+            return new()
+            {
+                CreatedOn = category.CreatedOn,
+                Id = category.Id,
+                UpdatedOn = category.UpdatedOn,
+                Description = category.Description
+            };
+        }
+
+        public TransactionCategory MapDtoToCategory(TransactionCategoryDto category)
+        {
+            return new()
+            {
+                Id = category.Id,
+                Description = category.Description,
+                CreatedOn = category.CreatedOn,
+                UpdatedOn = category.UpdatedOn
+            };
+        }
+
+        public TransactionCategory ProjectDtoToCategory(TransactionCategoryDto incoming, TransactionCategory entity)
+        {
+            entity.Id = incoming.Id;
+            entity.Description = incoming.Description;
+            entity.CreatedOn = incoming.CreatedOn;
+            entity.UpdatedOn = incoming.UpdatedOn;
+
+            return entity;
+        }
+    }
+}

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Services.Transactions
 {
-    public class MatchingCriteriaService(IMappingService mappingService, EfDbContext dbContext) : IMatchingCriteriaService
+    public class MatchingCriteriaService(ITransactionPropertyMapper propertyMapper, ITransactionCategoryMapper categoryMapper, EfDbContext dbContext) : IMatchingCriteriaService
     {
         public List<TransactionCategoryDto> GetMatchingCategoriesByReference(string reference)
         {
@@ -25,7 +25,7 @@ namespace Services.Transactions
             return matchingCriteriaWithCategories
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionCategories)
-                .Select(x => mappingService.MapCategoryToDto(x))
+                .Select(x => categoryMapper.MapCategoryToDto(x))
                 .Distinct()
                 .ToList();
 
@@ -38,14 +38,14 @@ namespace Services.Transactions
                 throw new ArgumentNullException();
             }
 
-            var matchingCriteriaWithCategories = dbContext
+            var matchingCriteriaWithProperties = dbContext
                 .MatchingCriteria
-                .Where(x => x.TransactionCategories.Any());
+                .Where(x => x.TransactionProperties.Any());
 
-            return matchingCriteriaWithCategories
+            return matchingCriteriaWithProperties
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionProperties)
-                .Select(x => mappingService.MapPropertyToDto(x))
+                .Select(x => propertyMapper.MapPropertyToDto(x))
                 .Distinct()
                 .ToList();
 

@@ -1,4 +1,6 @@
+using Services.Common;
 using Services.Input;
+using Services.Interfaces.Common;
 using Services.Interfaces.Input;
 using Services.Interfaces.Transactions;
 using Services.Transactions;
@@ -22,6 +24,15 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 //misc
 builder.Services.AddScoped<IMatchingCriteriaService, MatchingCriteriaService>();
+
+//mappers
+builder.Services.AddScoped<IChangeRequestMapper, ChangeRequestMapper>();
+builder.Services.AddScoped<IMatchingCriteriaMapper, MatchingCriteriaMapper>();
+builder.Services.AddScoped<ITransactionCategoryMapper, TransactionCategoryMapper>();
+builder.Services.AddScoped<ITransactionPropertyMapper, TransactionPropertyMapper>();
+builder.Services.AddScoped<ITransactionMapper, TransactionMapper>();
+
+
 
 var app = builder.Build();
 

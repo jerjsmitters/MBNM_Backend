@@ -9,23 +9,17 @@ using System.Text;
 
 namespace Services.Interfaces.Common
 {
-    public interface IMappingService
+    public interface IMappingService<T>
     {
-        ChangeRequest MapDtoToChangeRequest(ChangeRequestDto changeRequest);
-        ChangeRequestDto MapChangeRequestToDto(ChangeRequest changeRequest);
-        Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction);
 
 
-        TransactionDto MapTransactionToDto(Transaction transaction);
 
 
-        TransactionPropertyDto MapPropertyToDto(TransactionProperty property);
-        TransactionProperty MapDtoToProperty(TransactionPropertyDto property);
-        TransactionProperty ProjectDtoToProperty(TransactionPropertyDto incoming, TransactionProperty entity);
 
 
-        TransactionCategoryDto MapCategoryToDto(TransactionCategory category);
-        TransactionCategory MapDtoToCategory(TransactionCategoryDto category);
-        TransactionCategory ProjectDtoToCategory(TransactionCategoryDto incoming, TransactionCategory entity);
+
+
+
+
     }
 }

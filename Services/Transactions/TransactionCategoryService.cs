@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Services.Transactions
 {
-    public class TransactionCategoryService(EfDbContext dbContext, IMappingService mappingService) : ITransactionCategoryService
+    public class TransactionCategoryService(EfDbContext dbContext, ITransactionCategoryMapper mappingService) : ITransactionCategoryService
     {
         public async Task<TransactionCategoryDto?> Get(int id)
         {

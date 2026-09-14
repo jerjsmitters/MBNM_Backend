@@ -30,9 +30,10 @@ namespace Services.Input
     public class ChangeRequestService(
         EfDbContext dbContext, 
         ITransactionMatchingService transactionMatchingService, 
-        IMappingService mappingService,
         ITransactionPropertyService propertyService,
-        ITransactionCategoryService categoryService) : IChangeRequestService
+        ITransactionCategoryService categoryService,
+        IChangeRequestMapper changeRequestMapper,
+        ITransactionMapper transactionMapper) : IChangeRequestService
     {
 
         public async Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput)
@@ -86,7 +87,7 @@ namespace Services.Input
                 {
                     OperationPerformed = ChangeRequestCommitOperation.ADD,
                     TransactionBefore = null,
-                    TransactionAfter = mappingService.MapTransactionToDto(transactionToAdd)
+                    TransactionAfter = transactionMapper.MapTransactionToDto(transactionToAdd)
                 };
 
                 results.Add(result);
@@ -105,15 +106,15 @@ namespace Services.Input
                     continue;
                 }
 
-                transactionBeforeUpdate = mappingService.MapTransactionToDto(updateRequest.Transaction);
-                mappingService.ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
+                transactionBeforeUpdate = transactionMapper.MapTransactionToDto(updateRequest.Transaction);
+                changeRequestMapper.ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
                 updateRequest.RequestState = ChangeRequestState.COMMITED;
 
                 result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.UPDATE,
                     TransactionBefore = transactionBeforeUpdate,
-                    TransactionAfter = mappingService.MapTransactionToDto(updateRequest.Transaction)
+                    TransactionAfter = transactionMapper.MapTransactionToDto(updateRequest.Transaction)
                 };
 
                 results.Add(result);
@@ -129,13 +130,13 @@ namespace Services.Input
                     continue;
                 }
 
-                deleteRequest.Transaction.Deleted = true;
+                deleteRequest.Transaction.IsDeleted = true;
                 deleteRequest.RequestState = ChangeRequestState.COMMITED;
 
                 result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.DELETE,
-                    TransactionBefore = mappingService.MapTransactionToDto(deleteRequest.Transaction),
+                    TransactionBefore = transactionMapper.MapTransactionToDto(deleteRequest.Transaction),
                     TransactionAfter = null
                 };
 
@@ -219,12 +220,12 @@ namespace Services.Input
                 throw new ArgumentException("No change request lines" ,nameof(changeRequest));
             }
 
-            var changeRequestEntity = mappingService.MapDtoToChangeRequest(changeRequest);
+            var changeRequestEntity = changeRequestMapper.MapDtoToChangeRequest(changeRequest);
 
             var savedRequest = await dbContext.AddAsync(changeRequestEntity);
             await dbContext.SaveChangesAsync();
 
-            return mappingService.MapChangeRequestToDto(savedRequest.Entity);
+            return changeRequestMapper.MapChangeRequestToDto(savedRequest.Entity);
         }
 
 
@@ -237,11 +238,11 @@ namespace Services.Input
                 .Where(t => t.Date <= startDate && t.Date >= endDate)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.Sequence)
-                .Select(t => mappingService.MapTransactionToDto(t))
+                .Select(t => transactionMapper.MapTransactionToDto(t))
                 .ToList();
         }
 
-        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => mappingService.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => changeRequestMapper.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
 
 
         // ============ HELPER FNS ================//

@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Services.Transactions
 {
-    public class TransactionPropertyService(EfDbContext dbContext, IMappingService mappingService) : ITransactionPropertyService
+    public class TransactionPropertyService(EfDbContext dbContext, ITransactionPropertyMapper mappingService) : ITransactionPropertyService
     {
         public async Task<TransactionPropertyDto?> Get(int id)
         {
