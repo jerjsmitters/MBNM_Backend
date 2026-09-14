@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Services.Interfaces.Common;
 using Services.Interfaces.Input;
 using Services.Interfaces.Transactions;
+using Services.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +31,8 @@ namespace Services.Input
         EfDbContext dbContext, 
         ITransactionMatchingService transactionMatchingService, 
         IMappingService mappingService,
-        IMatchingCriteriaService matchingCriteriaService) : IChangeRequestService
+        ITransactionPropertyService propertyService,
+        ITransactionCategoryService categoryService) : IChangeRequestService
     {
 
         public async Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput)
@@ -104,7 +106,7 @@ namespace Services.Input
                 }
 
                 transactionBeforeUpdate = mappingService.MapTransactionToDto(updateRequest.Transaction);
-                ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
+                mappingService.ProjectChangeRequestLineToTransaction(updateRequest, updateRequest.Transaction);
                 updateRequest.RequestState = ChangeRequestState.COMMITED;
 
                 result = new ChangeRequestCommitResultDto
@@ -162,8 +164,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
-                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
+                        ProposedCategories = categoryService.GetTransactionCategoriesByReference(t.Reference),
+                        ProposedProperties = propertyService.GetTransactionPropertiesByReference(t.Reference)
 
                     }
                 )
@@ -181,8 +183,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
-                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
+                        ProposedCategories = categoryService.GetTransactionCategoriesByReference(t.Reference),
+                        ProposedProperties = propertyService.GetTransactionPropertiesByReference(t.Reference)
                     }
                 )
                 .ToList();
@@ -217,7 +219,7 @@ namespace Services.Input
                 throw new ArgumentException("No change request lines" ,nameof(changeRequest));
             }
 
-            var changeRequestEntity = mappingService.MapChangeRequestDtoToEntity(changeRequest);
+            var changeRequestEntity = mappingService.MapDtoToChangeRequest(changeRequest);
 
             var savedRequest = await dbContext.AddAsync(changeRequestEntity);
             await dbContext.SaveChangesAsync();
@@ -239,7 +241,7 @@ namespace Services.Input
                 .ToList();
         }
 
-        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => mappingService.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
 
 
         // ============ HELPER FNS ================//
@@ -275,14 +277,6 @@ namespace Services.Input
         {
             return applyChangeRequestLines.Any(cl => cl.LineId == changeRequestLine.Id && cl.DesiredState == ChangeRequestState.DENIED);
 
-        }
-
-        private static Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
-        {
-            transaction.Sequence = changeRequestLine.Sequence;
-            transaction.Reference = changeRequestLine.Reference;
-            transaction.Amount = changeRequestLine.Amount;
-            return transaction;
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using Common.Dto.ChangeRequest;
 using Common.Dto.ChangeRequest.Line;
 using Common.Dto.Transactions;
+using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.ChangeRequestEntities.Line;
 using DataAccess.Models.Transactions;
@@ -27,7 +28,7 @@ namespace Services.Common
 
 
         #region Change Request
-        public ChangeRequest MapChangeRequestDtoToEntity(ChangeRequestDto changeRequest)
+        public ChangeRequest MapDtoToChangeRequest(ChangeRequestDto changeRequest)
         {
             var createLines = changeRequest.CreateLines.Select(x => MapToCreateLineEntity(x)).ToList();
             var updateLines = changeRequest.UpdateLines.Select(x => MapToUpdateLineEntity(x)).ToList();
@@ -59,6 +60,17 @@ namespace Services.Common
             };
         }
 
+        public Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
+        {
+            transaction.Sequence = changeRequestLine.Sequence;
+            transaction.Reference = changeRequestLine.Reference;
+            transaction.Amount = changeRequestLine.Amount;
+            transaction.Categories = changeRequestLine.TransactionCategories;
+            transaction.Properties = changeRequestLine.TransactionProperties;
+
+            return transaction;
+        }
+
         private ChangeRequestCreateLineDto MapToCreateLineDto(ChangeRequestCreateLine createLine)
         {
             return null;
@@ -71,12 +83,6 @@ namespace Services.Common
 
         }
         private ChangeRequestDeleteLineDto MapToDeleteLineDto(ChangeRequestDeleteLine updateLine)
-        {
-            return null;
-
-        }
-
-        private ChangeRequestDeleteLine MapToDeleteLineEntity(ChangeRequestDeleteLine deleteLine)
         {
             return null;
 
@@ -127,5 +133,38 @@ namespace Services.Common
                 Description = property.Description
             };
         }
+
+        public TransactionProperty MapDtoToProperty(TransactionPropertyDto property)
+        {
+            return new TransactionProperty
+            {
+                Description = property.Description,
+                MatchingCriteria = property.MatchingCriteria?.Select(x => new MatchingCriteria { SearchText = x.Id.HasValue ? string.Empty : string.Empty }).ToList() ?? new List<MatchingCriteria>()
+            };
+        }
+
+        public TransactionProperty ProjectDtoToProperty(TransactionPropertyDto incoming, TransactionProperty entity)
+        {
+            entity.Description = incoming.Description;
+            // Note: matching criteria projection not implemented in detail
+            return entity;
+        }
+
+        public TransactionCategory MapDtoToCategory(TransactionCategoryDto category)
+        {
+            return new TransactionCategory
+            {
+                Description = category.Description,
+                MatchingCriteria = category.MatchingCriteria?.Select(x => new MatchingCriteria { SearchText = x.Id.HasValue ? string.Empty : string.Empty }).ToList() ?? new List<MatchingCriteria>()
+            };
+        }
+
+        public TransactionCategory ProjectDtoToCategory(TransactionCategoryDto incoming, TransactionCategory entity)
+        {
+            entity.Description = incoming.Description;
+            // Note: matching criteria projection not implemented in detail
+            return entity;
+        }
+
     }
 }

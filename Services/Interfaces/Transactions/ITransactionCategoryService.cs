@@ -6,9 +6,13 @@ using System.Text;
 
 namespace Services.Interfaces.Transactions
 {
-    //TBI
     public interface ITransactionCategoryService
     {
-
+        Task<TransactionCategoryDto> Add(TransactionCategoryDto transactionDto);
+        Task Delete(int id);
+        Task<TransactionCategoryDto?> Get(int id);
+        Task<List<TransactionCategoryDto>> GetAll();
+        List<TransactionCategoryDto> GetTransactionCategoriesByReference(string reference);
+        Task<TransactionCategoryDto?> Update(TransactionCategoryDto transactionDto);
     }
 }

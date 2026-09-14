@@ -17,6 +17,7 @@ namespace DataAccess.EF.DbContextImpl
         public DbSet<ChangeRequestDeleteLine> ChangeRequestDeleteLines { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionCategory> TransactionCategories { get; set; }
+        public DbSet<TransactionProperty> TransactionProperties { get; set; }
         public DbSet<TransactionEvidence> TransactionEvidence { get; set; }
         public DbSet<MatchingCriteria> MatchingCriteria { get; set; }
 

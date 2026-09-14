@@ -9,5 +9,7 @@ namespace Common.Dto.Base
         public int? Id { get; init; }
         public DateTime? CreatedOn { get; init; }
         public DateTime? UpdatedOn { get; init; }
+        public bool IsDeleted { get; set; }
+
     }
 }
