@@ -32,6 +32,7 @@ namespace Services.Input
         ITransactionMatchingService transactionMatchingService, 
         ITransactionPropertyService propertyService,
         ITransactionCategoryService categoryService,
+        IMatchingCriteriaService matchingCriteriaService,
         IChangeRequestMapper changeRequestMapper,
         ITransactionMapper transactionMapper) : IChangeRequestService
     {
@@ -153,7 +154,6 @@ namespace Services.Input
         // ========================== PRIVATE FNS ===========================//
         private ChangeRequestDto GenerateChangeRequest(List<InputTransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
-
             //1) Add operations
             var needToBeAdded = inputTransactions
                 .Where(it => !persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(it, pt)))
@@ -165,8 +165,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = categoryService.GetTransactionCategoriesByReference(t.Reference),
-                        ProposedProperties = propertyService.GetTransactionPropertiesByReference(t.Reference)
+                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
+                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
 
                     }
                 )
@@ -184,8 +184,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = categoryService.GetTransactionCategoriesByReference(t.Reference),
-                        ProposedProperties = propertyService.GetTransactionPropertiesByReference(t.Reference)
+                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
+                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
                     }
                 )
                 .ToList();

@@ -34,15 +34,6 @@ namespace Services.Transactions
                 .ToList();
         }
 
-        public List<TransactionPropertyDto> GetTransactionPropertiesByReference(string reference)
-        {
-           return dbContext
-                .TransactionProperties
-                .Where(tp => tp.MatchingCriteria.Any(mc => mc.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(mc.SearchText)))
-                .Select(mappingService.MapPropertyToDto)
-                .ToList();
-        }
-
         public async Task<TransactionPropertyDto> Add(TransactionPropertyDto transactionDto)
         {
             if (transactionDto.Id.HasValue)

@@ -8,10 +8,12 @@ using System.Text;
 
 namespace DataAccess.EF.ModelConfigurations.Base
 {
-    internal class TransactionDataChangeRequestLineConfig<T>: EntityTypeConfigurationBase<T> where T : TransactionDataChangeRequestLine
+    internal class TransactionDataChangeRequestLineConfig
     {
-        new public void Configure(EntityTypeBuilder<T> builder)
+        public static void Configure<T>(EntityTypeBuilder<T> builder) where T : TransactionDataChangeRequestLine
         {
+           ChangeRequestLineConfig.Configure(builder);
+
             builder
               .Property(x => x.Amount)
               .HasDefaultValue(0d)
@@ -28,8 +30,6 @@ namespace DataAccess.EF.ModelConfigurations.Base
             builder
               .Property(x => x.Reference)
               .IsRequired();
-
-            base.Configure(builder);
         }
     }
 }

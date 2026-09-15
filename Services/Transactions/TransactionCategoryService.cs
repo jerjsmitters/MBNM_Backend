@@ -35,15 +35,6 @@ namespace Services.Transactions
                 .ToList();
         }
 
-        public List<TransactionCategoryDto> GetTransactionCategoriesByReference(string reference)
-        {
-            return dbContext
-                .TransactionCategories
-                .Where(tc => tc.MatchingCriteria.Any(mc => mc.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(mc.SearchText)))
-                .Select(mappingService.MapCategoryToDto)
-                .ToList();
-        }
-
         public async Task<TransactionCategoryDto> Add(TransactionCategoryDto transactionDto)
         {
             if (transactionDto.Id.HasValue)

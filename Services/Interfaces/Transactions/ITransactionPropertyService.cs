@@ -12,7 +12,6 @@ namespace Services.Interfaces.Transactions
         Task Delete(int id);
         Task<TransactionPropertyDto?> Get(int id);
         Task<List<TransactionPropertyDto>> GetAll();
-        List<TransactionPropertyDto> GetTransactionPropertiesByReference(string reference);
         Task<TransactionPropertyDto?> Update(TransactionPropertyDto transactionDto);
     }
 }

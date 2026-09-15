@@ -1,3 +1,4 @@
+using DataAccess.EF.ModelConfigurations.Base;
 using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,15 +9,11 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
     {
         public void Configure(EntityTypeBuilder<TransactionCategory> builder)
         {
-            //builder.ToTable("ConfiguredMovements");
-            //builder.HasKey(x => x.Id);
+            EntityBaseConfig.Configure(builder);
+            builder.Property(b => b.Description).IsRequired();
 
-            //inherited
-            builder.HasKey(b => b.Id);
-
-            builder
-                .Property(b => b.CreatedOn)
-                .IsRequired();
+            // Many-to-many with MatchingCriteria
+            builder.HasMany(b => b.CriteriaToMatchOn).WithMany(c => c.TransactionCategories);
         }
     }
 }

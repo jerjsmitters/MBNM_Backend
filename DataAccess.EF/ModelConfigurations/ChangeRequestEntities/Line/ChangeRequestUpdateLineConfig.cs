@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities.Line
 {
-    internal class ChangeRequestUpdateLineConfig : EntityTypeConfigurationBase<ChangeRequestUpdateLine>
+    internal class ChangeRequestUpdateLineConfig : IEntityTypeConfiguration<ChangeRequestUpdateLine>
     {
         new public void Configure(EntityTypeBuilder<ChangeRequestUpdateLine> builder)
         {
-            builder.HasMany(x => x.TransactionProperties);
-            builder.HasMany(x => x.TransactionCategories);
-            builder.HasOne(x => x.Transaction);
-            base.Configure(builder);
+            TransactionDataChangeRequestLineConfig.Configure(builder);
+
+            builder.HasMany(b => b.TransactionCategories).WithMany();
+            builder.HasMany(b => b.TransactionProperties).WithMany();
         }
     }
 }

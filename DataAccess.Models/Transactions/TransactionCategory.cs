@@ -8,6 +8,6 @@ namespace DataAccess.Models.Transactions
     public class TransactionCategory : EntityBase
     {
         public string Description { get; set; }
-        public List<MatchingCriteria> MatchingCriteria { get; set; }
+        public List<MatchingCriteria> CriteriaToMatchOn { get; set; }
     }
 }

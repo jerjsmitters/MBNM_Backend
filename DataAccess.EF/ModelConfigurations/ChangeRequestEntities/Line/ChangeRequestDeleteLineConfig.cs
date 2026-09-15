@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities.Line
 {
-    internal class ChangeRequestDeleteLineConfig : EntityTypeConfigurationBase<ChangeRequestDeleteLine>
+    internal class ChangeRequestDeleteLineConfig : IEntityTypeConfiguration<ChangeRequestDeleteLine>
     {
         new public void Configure(EntityTypeBuilder<ChangeRequestDeleteLine> builder)
         {
-            builder.HasOne(x => x.Transaction);
-            base.Configure(builder);
+            ChangeRequestLineConfig.Configure(builder);
+
+            // Delete line references the original Transaction
+            builder.HasOne(b => b.Transaction).WithMany();
         }
     }
 }

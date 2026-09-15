@@ -11,8 +11,7 @@ namespace Services.Interfaces.Transactions
         Task<TransactionCategoryDto> Add(TransactionCategoryDto transactionDto);
         Task Delete(int id);
         Task<TransactionCategoryDto?> Get(int id);
-        Task<List<TransactionCategoryDto>> GetAll();
-        List<TransactionCategoryDto> GetTransactionCategoriesByReference(string reference);
+        Task<List<TransactionCategoryDto>> GetAll();        
         Task<TransactionCategoryDto?> Update(TransactionCategoryDto transactionDto);
     }
 }

@@ -1,0 +1,9 @@
+Setup the enviroment variables 
+MBNM_DB_SERVER
+MBNM_DB_PORT
+MBNM_DB_DATABASE
+MBNM_DB_USER
+MBNM_DB_PASSWORD
+
+
+Create migrations setting DataAccess.EF as startup project, open Package Manage Console, set default project as DataAccess.EF, and running "Add-Migration <MigrationName>"

@@ -5,21 +5,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities
 {
-    internal class ChangeRequestConfig : EntityTypeConfigurationBase<ChangeRequest>
+    internal class ChangeRequestConfig : IEntityTypeConfiguration<ChangeRequest>
     {
         new public void Configure(EntityTypeBuilder<ChangeRequest> builder)
         {
-            builder
-                .HasMany(b => b.CreateLines)
-                .WithOne(b => b.ChangeRequest);
-            builder
-                .HasMany(b => b.UpdateLines)
-                .WithOne(b => b.ChangeRequest); ;
-            builder
-                .HasMany(b => b.DeleteLines)
-                .WithOne(b => b.ChangeRequest);
+            EntityBaseConfig.Configure(builder);
 
-            base.Configure(builder);
+            builder.HasMany(b => b.CreateLines).WithOne(l => l.ChangeRequest);
+            builder.HasMany(b => b.UpdateLines).WithOne(l => l.ChangeRequest);
+            builder.HasMany(b => b.DeleteLines).WithOne(l => l.ChangeRequest);
         }
     }
 }

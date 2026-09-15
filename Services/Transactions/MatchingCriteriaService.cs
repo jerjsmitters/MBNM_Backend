@@ -18,17 +18,14 @@ namespace Services.Transactions
                 throw new ArgumentNullException();
             }
 
-            var matchingCriteriaWithCategories = dbContext
+            return dbContext
                 .MatchingCriteria
-                .Where(x => x.TransactionCategories.Any());
-
-            return matchingCriteriaWithCategories
+                .Where(x => x.TransactionCategories.Any())
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionCategories)
-                .Select(x => categoryMapper.MapCategoryToDto(x))
                 .Distinct()
+                .Select(x => categoryMapper.MapCategoryToDto(x))
                 .ToList();
-
         }
 
         public List<TransactionPropertyDto> GetMatchingPropertiesByReference(string reference)
@@ -38,19 +35,14 @@ namespace Services.Transactions
                 throw new ArgumentNullException();
             }
 
-            var matchingCriteriaWithProperties = dbContext
+            return dbContext
                 .MatchingCriteria
-                .Where(x => x.TransactionProperties.Any());
-
-            return matchingCriteriaWithProperties
+                .Where(x => x.TransactionProperties.Any())
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionProperties)
-                .Select(x => propertyMapper.MapPropertyToDto(x))
                 .Distinct()
+                .Select(x => propertyMapper.MapPropertyToDto(x))
                 .ToList();
-
         }
-
-
     }
 }

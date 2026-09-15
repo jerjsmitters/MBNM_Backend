@@ -5,42 +5,23 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.Transactions
 {
-    internal class TransactionConfig : EntityTypeConfigurationBase<Transaction>
+    internal class TransactionConfig : IEntityTypeConfiguration<Transaction>
     {
         new public void Configure(EntityTypeBuilder<Transaction> builder)
         {
-            builder
-                .Property(b => b.Amount)
-                .IsRequired();
+            EntityBaseConfig.Configure(builder);
 
-            builder
-                .Property(b => b.Date)
-                .IsRequired();
+            builder.Property(b => b.Amount).IsRequired();
+            builder.Property(b => b.Date).IsRequired();
+            builder.Property(b => b.Sequence).IsRequired();
+            builder.Property(b => b.Reference).IsRequired(false);
 
-            builder
-                .Property(b => b.Sequence)
-                .IsRequired();
+            // Many-to-many to categories and properties (no inverse navigation on category/property for transactions)
+            builder.HasMany(b => b.AssignnedCategories).WithMany();
+            builder.HasMany(b => b.AssignedProperties).WithMany();
 
-            builder
-                .Property(b => b.Reference)
-                .IsRequired();
-
-            builder
-                .Property(b => b.IsDeleted)
-                .HasDefaultValue(false)
-                .IsRequired();
-
-            // FKs
-            builder.HasMany(b => b.Properties);
-
-            builder.HasMany(b => b.Categories);
-
-            builder
-                .HasMany(b => b.Evidence)
-                .WithOne(b => b.Transaction);
-
-
-            base.Configure(builder);
+            // Evidence one-to-many
+            builder.HasMany(b => b.Evidence).WithOne(e => e.Transaction);
         }
     }
 }

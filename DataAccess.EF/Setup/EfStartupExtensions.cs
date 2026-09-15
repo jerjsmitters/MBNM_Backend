@@ -14,14 +14,6 @@ namespace DataAccess.EF.Setup
                 options.UseMySQL(connString);
             });
 
-            //services.AddScoped<IConfiguredMovementRepository, ConfiguredMovementRepository>();
-            //services.AddScoped<IMovementRepository, MovementRepository>();
-            //services.AddScoped<IMovementConfigurationRepository, MovementConfigurationRepository>();
-            //services.AddScoped<IWorkoutTemplateRepository, WorkoutTemplateRepository>();
-
-            //services.AddScoped<IWorkoutInstanceRepository, WorkoutInstanceRepository>();
-            //services.AddScoped<IWorkoutInstanceMovementRepository, WorkoutInstanceMovementRepository>();
-            //services.AddScoped<IWorkoutInstanceMovementSetRepository, WorkoutInstanceMovementSetRepository>();
             return services;
         }
     }

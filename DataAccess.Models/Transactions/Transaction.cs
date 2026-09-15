@@ -12,8 +12,8 @@ namespace DataAccess.Models.Transactions
         public int Sequence { get; set; }
         public string Reference { get; set; }
 
-        public List<TransactionCategory> Categories { get; set; }
-        public List<TransactionProperty> Properties { get; set; }
+        public List<TransactionCategory> AssignnedCategories { get; set; }
+        public List<TransactionProperty> AssignedProperties { get; set; }
         public List<TransactionEvidence> Evidence { get; set; }
     }
 }

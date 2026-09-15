@@ -19,8 +19,8 @@ namespace Services.Common
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
 
-                Categories = transaction.Categories.Select(categoryMapper.MapDtoToCategory).ToList(),
-                Properties = transaction.Properties.Select(propertyMapper.MapDtoToProperty).ToList(),
+                AssignnedCategories = transaction.Categories.Select(categoryMapper.MapDtoToCategory).ToList(),
+                AssignedProperties = transaction.Properties.Select(propertyMapper.MapDtoToProperty).ToList(),
 
                 CreatedOn = transaction.CreatedOn,
                 UpdatedOn = transaction.UpdatedOn
@@ -37,8 +37,8 @@ namespace Services.Common
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
 
-                Categories = transaction.Categories.Select(categoryMapper.MapCategoryToDto).ToList(),
-                Properties = transaction.Properties.Select(propertyMapper.MapPropertyToDto).ToList(),
+                Categories = transaction.AssignnedCategories.Select(categoryMapper.MapCategoryToDto).ToList(),
+                Properties = transaction.AssignedProperties.Select(propertyMapper.MapPropertyToDto).ToList(),
 
                 CreatedOn = transaction.CreatedOn,
                 UpdatedOn= transaction.UpdatedOn
