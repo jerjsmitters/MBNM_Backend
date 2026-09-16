@@ -9,11 +9,11 @@ using System.Text;
 
 namespace DataAccess.EF.ModelConfigurations.Base
 {
-    internal abstract class ChangeRequestLineConfig
+    public abstract class ChangeRequestLineConfig : EntityBaseConfig
     {
-        public static void Configure<T>(EntityTypeBuilder<T> builder) where T : ChangeRequestLine
+        protected void Configure<T>(EntityTypeBuilder<T> builder) where T : ChangeRequestLine
         {
-            EntityBaseConfig.Configure(builder);
+            base.Configure(builder);
             builder
                 .Property(b => b.RequestState)
                 .HasDefaultValue(ChangeRequestState.PENDING)

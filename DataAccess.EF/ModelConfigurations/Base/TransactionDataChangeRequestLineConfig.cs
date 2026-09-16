@@ -8,11 +8,11 @@ using System.Text;
 
 namespace DataAccess.EF.ModelConfigurations.Base
 {
-    internal class TransactionDataChangeRequestLineConfig
+    abstract public class TransactionDataChangeRequestLineConfig : ChangeRequestLineConfig
     {
-        public static void Configure<T>(EntityTypeBuilder<T> builder) where T : TransactionDataChangeRequestLine
+        public void Configure<T>(EntityTypeBuilder<T> builder) where T : TransactionDataChangeRequestLine
         {
-           ChangeRequestLineConfig.Configure(builder);
+           base.Configure(builder);
 
             builder
               .Property(x => x.Amount)

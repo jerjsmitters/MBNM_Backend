@@ -7,9 +7,9 @@ using System.Text;
 
 namespace DataAccess.EF.ModelConfigurations.Base
 {
-    internal class EntityBaseConfig
+    public abstract class EntityBaseConfig
     {
-        static public void Configure<T>(EntityTypeBuilder<T> builder) where T : EntityBase
+        protected void Configure<T>(EntityTypeBuilder<T> builder) where T : EntityBase
         {
             builder.HasKey(b => b.Id);
             builder.Property(b => b.CreatedOn).IsRequired();

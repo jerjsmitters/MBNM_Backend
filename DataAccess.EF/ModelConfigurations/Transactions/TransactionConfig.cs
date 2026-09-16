@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.Transactions
 {
-    internal class TransactionConfig : IEntityTypeConfiguration<Transaction>
+    internal class TransactionConfig : EntityBaseConfig, IEntityTypeConfiguration<Transaction>
     {
         new public void Configure(EntityTypeBuilder<Transaction> builder)
         {
-            EntityBaseConfig.Configure(builder);
+            base.Configure(builder);
 
             builder.Property(b => b.Amount).IsRequired();
             builder.Property(b => b.Date).IsRequired();

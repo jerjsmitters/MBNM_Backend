@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.Transactions
 {
-    public class TransactionEvidenceConfig : IEntityTypeConfiguration<TransactionEvidence>
+    public class TransactionEvidenceConfig : EntityBaseConfig, IEntityTypeConfiguration<TransactionEvidence>
     {
         public void Configure(EntityTypeBuilder<TransactionEvidence> builder)
         {
-            EntityBaseConfig.Configure(builder);            
+            base.Configure(builder);            
             
             builder.Property(b => b.FileLocation).IsRequired();
 

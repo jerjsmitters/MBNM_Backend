@@ -27,6 +27,7 @@ namespace Services.Setup
             services.AddScoped<ITransactionEvidenceService, TransactionEvidenceService>();
             services.AddScoped<ITransactionPropertyService, TransactionPropertyService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ITransactionMatchingService, TransactionMatchingService>();
 
             //misc
             services.AddScoped<IMatchingCriteriaService, MatchingCriteriaService>();

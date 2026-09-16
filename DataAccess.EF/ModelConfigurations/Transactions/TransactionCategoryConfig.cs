@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.EF.ModelConfigurations.Transactions
 {
-    public class TransactionCategoryConfig : IEntityTypeConfiguration<TransactionCategory>
+    public class TransactionCategoryConfig : EntityBaseConfig, IEntityTypeConfiguration<TransactionCategory>
     {
         public void Configure(EntityTypeBuilder<TransactionCategory> builder)
         {
-            EntityBaseConfig.Configure(builder);
+            base.Configure(builder);
             builder.Property(b => b.Description).IsRequired();
 
             // Many-to-many with MatchingCriteria

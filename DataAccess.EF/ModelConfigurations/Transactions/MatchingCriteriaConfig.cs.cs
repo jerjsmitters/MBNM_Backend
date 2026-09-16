@@ -8,11 +8,11 @@ using System.Text;
 
 namespace DataAccess.EF.ModelConfigurations.Transactions
 {
-    internal class MatchingCriteriaConfig : IEntityTypeConfiguration<MatchingCriteria>
+    internal class MatchingCriteriaConfig : EntityBaseConfig, IEntityTypeConfiguration<MatchingCriteria>
     {
         public void Configure(EntityTypeBuilder<MatchingCriteria> builder)
         {
-            EntityBaseConfig.Configure(builder);
+            base.Configure(builder);
 
             builder.Property(b => b.SearchText).IsRequired();
             builder.Property(b => b.MatchingCriteriaMode).IsRequired();
