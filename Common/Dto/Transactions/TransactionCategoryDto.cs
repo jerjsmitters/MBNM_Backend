@@ -5,10 +5,9 @@ using System.Text;
 
 namespace Common.Dto.Transactions
 {
-    public record TransactionCategoryDto : EntityBaseDto
+    public record TransactionCategoryDto : EntityWithCriteriaDto
     {
         public string Description { get; init; }
-        public List<MatchingCriteriaDto> MatchingCriteria { get; set; }
     }
 }
  

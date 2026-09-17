@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Services.Common
 {
-    public class TransactionCategoryMapper : ITransactionCategoryMapper
+    public class TransactionCategoryMapper(IMatchingCriteriaMapper matchingCriteriaMapper) : ITransactionCategoryMapper
     {
         public TransactionCategoryDto MapCategoryToDto(TransactionCategory category)
         {
@@ -37,6 +37,8 @@ namespace Services.Common
             entity.Description = incoming.Description;
             entity.CreatedOn = incoming.CreatedOn;
             entity.UpdatedOn = incoming.UpdatedOn;
+
+            matchingCriteriaMapper.ProjectDtoToEntityWithCriteria(incoming, entity);
 
             return entity;
         }

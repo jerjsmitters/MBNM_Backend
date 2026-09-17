@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Services.Common
 {
-    public class TransactionPropertyMapper : ITransactionPropertyMapper
+    public class TransactionPropertyMapper(IMatchingCriteriaMapper matchingCriteriaMapper) : ITransactionPropertyMapper
     {
         public TransactionPropertyDto MapPropertyToDto(TransactionProperty property)
         {
@@ -16,7 +16,8 @@ namespace Services.Common
                 Id = property.Id,
                 Description = property.Description,
                 CreatedOn = property.CreatedOn,
-                UpdatedOn = property.UpdatedOn
+                UpdatedOn = property.UpdatedOn,
+                CriteriaToMatchOn = property.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList()
             };
         }
 
@@ -27,7 +28,8 @@ namespace Services.Common
                 Id = property.Id,
                 Description = property.Description,
                 CreatedOn = property.CreatedOn,
-                UpdatedOn = property.UpdatedOn
+                UpdatedOn = property.UpdatedOn,
+                CriteriaToMatchOn = property.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList()
             };
         }
 
@@ -37,7 +39,9 @@ namespace Services.Common
             entity.Description = incoming.Description;
             entity.CreatedOn = incoming.CreatedOn;
             entity.UpdatedOn = incoming.UpdatedOn;
-            
+
+            matchingCriteriaMapper.ProjectDtoToEntityWithCriteria(incoming, entity);
+
             return entity;
         }
     }

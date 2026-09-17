@@ -1,4 +1,4 @@
-﻿using Common.Dto.ChangeRequest.Line.Base;
+﻿using Common.Dto.Base;
 
 namespace Common.Dto.ChangeRequest.Line
 {

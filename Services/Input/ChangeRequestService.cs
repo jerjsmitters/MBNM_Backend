@@ -1,7 +1,7 @@
 ﻿using Common.Dto.Api;
+using Common.Dto.Base;
 using Common.Dto.ChangeRequest;
 using Common.Dto.ChangeRequest.Line;
-using Common.Dto.ChangeRequest.Line.Base;
 using Common.Dto.Input;
 using Common.Dto.Transactions;
 using Common.Enums;

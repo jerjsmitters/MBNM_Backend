@@ -5,9 +5,8 @@ using System.Text;
 
 namespace DataAccess.Models.Transactions
 {
-    public class TransactionCategory : EntityBase
+    public class TransactionCategory : EntityWithCriteria
     {
         public string Description { get; set; }
-        public List<MatchingCriteria> CriteriaToMatchOn { get; set; }
     }
 }

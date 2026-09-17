@@ -1,4 +1,5 @@
-﻿using Common.Dto.ChangeRequest;
+﻿using Common.Dto.Base;
+using Common.Dto.ChangeRequest;
 using Common.Dto.Transactions;
 using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
@@ -13,5 +14,9 @@ namespace Services.Interfaces.Common
     {
         MatchingCriteria MapDtoToMatchingCriteria(MatchingCriteriaDto matchingCriteria);
         MatchingCriteriaDto MapMatchingCriteriaToDto(MatchingCriteria matchingCriteria);
+        MatchingCriteria ProjectDtoToMatchingCriteria(MatchingCriteriaDto incoming, MatchingCriteria entity);
+        ENT ProjectDtoToEntityWithCriteria<ENT, DTO>(DTO incoming, ENT entity)
+            where ENT : EntityWithCriteria
+            where DTO : EntityWithCriteriaDto;
     }
 }
