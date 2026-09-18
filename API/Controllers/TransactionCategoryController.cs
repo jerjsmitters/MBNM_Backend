@@ -1,4 +1,4 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces.Transactions;
@@ -10,7 +10,7 @@ namespace API.Controllers
     [ApiController]
     public class TransactionCategoryController(ITransactionCategoryService transactionCategoryService) : ControllerBase
     {
-        [HttpGet("/{transactionCategoryId}")]
+        [HttpGet("{transactionCategoryId}")]
         public async Task<ActionResult<TransactionCategoryDto?>> Get([FromRoute] int transactionCategoryId)
         {
             var category = await transactionCategoryService.Get(transactionCategoryId);
@@ -43,7 +43,7 @@ namespace API.Controllers
             return Ok(createdEntity);
         }
 
-        [HttpDelete("/{transactionCategoryId}")]
+        [HttpDelete("{transactionCategoryId}")]
         public async Task<ActionResult> Delete([FromRoute] int transactionCategoryId)
         {
             await transactionCategoryService.Delete(transactionCategoryId);

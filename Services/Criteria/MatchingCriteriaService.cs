@@ -1,4 +1,4 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
 using Common.Enums;
 using DataAccess.EF.DbContextImpl;
 using Services.Interfaces.Common;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Services.Transactions
+namespace Services.Criteria
 {
     public class MatchingCriteriaService(ITransactionPropertyMapper propertyMapper, ITransactionCategoryMapper categoryMapper, EfDbContext dbContext) : IMatchingCriteriaService
     {

@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models.Base;
+using DataAccess.Models.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Text;

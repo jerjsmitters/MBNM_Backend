@@ -1,5 +1,5 @@
-﻿using Common.Dto.Transactions;
-using DataAccess.Models.Transactions;
+﻿using Common.Dto.Criteria;
+using DataAccess.Models.Criteria;
 using Services.Interfaces.Common;
 using System;
 using System.Collections.Generic;

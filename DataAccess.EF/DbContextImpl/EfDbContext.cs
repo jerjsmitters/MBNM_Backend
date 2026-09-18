@@ -2,6 +2,7 @@
 using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.ChangeRequestEntities.Line;
+using DataAccess.Models.Criteria;
 using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using System;

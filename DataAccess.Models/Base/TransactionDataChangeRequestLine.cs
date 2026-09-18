@@ -1,5 +1,5 @@
 ﻿using Common.Enums;
-using DataAccess.Models.Transactions;
+using DataAccess.Models.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Text;

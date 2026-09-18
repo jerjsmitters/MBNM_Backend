@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Dto.Transactions
+namespace Common.Dto.Criteria
 {
     public record MatchingCriteriaDto : EntityBaseDto
     {

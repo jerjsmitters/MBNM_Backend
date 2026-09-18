@@ -1,5 +1,5 @@
 using DataAccess.EF.ModelConfigurations.Base;
-using DataAccess.Models.Transactions;
+using DataAccess.Models.Criteria;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

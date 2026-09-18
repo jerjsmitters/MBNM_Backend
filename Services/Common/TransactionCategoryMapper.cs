@@ -1,5 +1,5 @@
-﻿using Common.Dto.Transactions;
-using DataAccess.Models.Transactions;
+﻿using Common.Dto.Criteria;
+using DataAccess.Models.Criteria;
 using Services.Interfaces.Common;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,8 @@ namespace Services.Common
                 CreatedOn = category.CreatedOn,
                 Id = category.Id,
                 UpdatedOn = category.UpdatedOn,
-                Description = category.Description
+                Description = category.Description,
+                CriteriaToMatchOn = category.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList()
             };
         }
 
@@ -27,7 +28,8 @@ namespace Services.Common
                 Id = category.Id,
                 Description = category.Description,
                 CreatedOn = category.CreatedOn,
-                UpdatedOn = category.UpdatedOn
+                UpdatedOn = category.UpdatedOn,
+                CriteriaToMatchOn = category.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList()
             };
         }
 

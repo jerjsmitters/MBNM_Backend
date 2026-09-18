@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataAccess.Models.Transactions
+namespace DataAccess.Models.Criteria
 {
     public class TransactionCategory : EntityWithCriteria
     {

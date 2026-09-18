@@ -1,4 +1,4 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces.Transactions;
@@ -43,7 +43,7 @@ namespace API.Controllers
             return Ok(createdEntity);
         }
 
-        [HttpDelete("/{transactionPropertyId}")]
+        [HttpDelete("{transactionPropertyId}")]
         public async Task<ActionResult> Delete([FromRoute] int transactionPropertyId)
         {
             await transactionPropertyService.Delete(transactionPropertyId);

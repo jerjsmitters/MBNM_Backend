@@ -1,4 +1,5 @@
 ﻿using Common.Dto.Base;
+using Common.Dto.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,4 +1,4 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
 using Common.Enums;
 using System;
 using System.Collections.Generic;

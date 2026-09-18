@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Dto.Transactions
+namespace Common.Dto.Criteria
 {
     public record TransactionCategoryDto : EntityWithCriteriaDto
     {
-        public string Description { get; init; }
     }
 }
  

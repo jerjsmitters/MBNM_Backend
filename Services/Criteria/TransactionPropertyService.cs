@@ -1,20 +1,20 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
+using Common.Dto.Transactions;
 using Common.Enums;
 using DataAccess.EF.DbContextImpl;
+using DataAccess.Models.Criteria;
 using Microsoft.EntityFrameworkCore;
+using Services.Common;
 using Services.Interfaces.Common;
 using Services.Interfaces.Transactions;
 
-namespace Services.Transactions
+namespace Services.Criteria
 {
     public class TransactionPropertyService(EfDbContext dbContext, ITransactionPropertyMapper mappingService) : ITransactionPropertyService
     {
         public async Task<TransactionPropertyDto?> Get(int id)
         {
-            var property = await dbContext
-                .TransactionProperties
-                .Include(tp => tp.CriteriaToMatchOn)
-                .FirstOrDefaultAsync(tp => tp.Id == id);
+            var property = await FindWithCriteriaAsync(id);
 
             if (property == null) 
             {
@@ -28,6 +28,7 @@ namespace Services.Transactions
         {
             var properties = await dbContext
                 .TransactionProperties
+                .Where(x => !x.IsDeleted)
                 .Include(t => t.CriteriaToMatchOn)
                 .ToListAsync();
 
@@ -38,10 +39,7 @@ namespace Services.Transactions
 
         public async Task<TransactionPropertyDto> Add(TransactionPropertyDto transactionDto)
         {
-            if (transactionDto.Id.HasValue)
-            {
-                throw new Exception("Cannot add an entity that already has an ID");
-            }
+            ValidationService.ThrowIfInvalidForCreate(transactionDto);
 
             var entity = mappingService.MapDtoToProperty(transactionDto);
             var result = await dbContext.AddAsync(entity);
@@ -52,24 +50,18 @@ namespace Services.Transactions
         }
 
 
-        public async Task<TransactionPropertyDto?> Update(TransactionPropertyDto transactionDto)
+        public async Task<TransactionPropertyDto?> Update(TransactionPropertyDto updatedPropertyDto)
         {
-            if (!transactionDto.Id.HasValue)
-            {
-                throw new Exception("Cannot update an entity without an ID");
-            }
+            ValidationService.ThrowIfInvalidForCreate(updatedPropertyDto);
 
-            var entity = await dbContext
-                .TransactionProperties
-                .Include(tp => tp.CriteriaToMatchOn)
-                .FirstOrDefaultAsync(tp => tp.Id == transactionDto.Id);
+            var property = await FindWithCriteriaAsync(updatedPropertyDto.Id.Value);
 
-            if (entity == null)
+            if (updatedPropertyDto == null)
             {
                 return null;
             }
 
-            var entityWithUpdatedValues = mappingService.ProjectDtoToProperty(transactionDto, entity);
+            var entityWithUpdatedValues = mappingService.ProjectDtoToProperty(updatedPropertyDto, property);
             await dbContext.SaveChangesAsync();
 
             return mappingService.MapPropertyToDto(entityWithUpdatedValues);
@@ -85,6 +77,14 @@ namespace Services.Transactions
 
             entity.IsDeleted = true;
             await dbContext.SaveChangesAsync();
+        }
+
+        private Task<TransactionProperty?> FindWithCriteriaAsync(int id)
+        {
+            return dbContext
+                .TransactionProperties
+                .Include(tp => tp.CriteriaToMatchOn)
+                .FirstOrDefaultAsync(tp => tp.Id == id);
         }
     }
 }

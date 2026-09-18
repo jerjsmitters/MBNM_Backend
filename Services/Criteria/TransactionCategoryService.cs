@@ -1,6 +1,4 @@
 ﻿using Common.Dto.Input;
-using Common.Dto.Transactions;
-using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces.Common;
 using Services.Interfaces.Transactions;
@@ -10,14 +8,18 @@ using Common.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common.Dto.Criteria;
+using DataAccess.Models.Criteria;
+using Services.Common;
 
-namespace Services.Transactions
+namespace Services.Criteria
 {
     public class TransactionCategoryService(EfDbContext dbContext, ITransactionCategoryMapper mappingService) : ITransactionCategoryService
     {
         public async Task<TransactionCategoryDto?> Get(int id)
         {
-            var category = await dbContext.TransactionCategories.FindAsync(id);
+            var category = await FindWithCriteriaAsync(id);
+
             if (category == null)
             {
                 return null;
@@ -28,21 +30,22 @@ namespace Services.Transactions
 
         public async Task<List<TransactionCategoryDto>> GetAll()
         {
-            var categories = await dbContext.TransactionCategories.ToListAsync();
+            var categories = await dbContext
+                .TransactionCategories
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.CriteriaToMatchOn)
+                .ToListAsync();
 
             return categories
                 .Select(mappingService.MapCategoryToDto)
                 .ToList();
         }
 
-        public async Task<TransactionCategoryDto> Add(TransactionCategoryDto transactionDto)
+        public async Task<TransactionCategoryDto> Add(TransactionCategoryDto transcationCategoryDto)
         {
-            if (transactionDto.Id.HasValue)
-            {
-                throw new Exception("Cannot add an entity that already has an ID");
-            }
+            ValidationService.ThrowIfInvalidForCreate(transcationCategoryDto);
 
-            var entity = mappingService.MapDtoToCategory(transactionDto);
+            var entity = mappingService.MapDtoToCategory(transcationCategoryDto);
             var result = await dbContext.AddAsync(entity);
 
             await dbContext.SaveChangesAsync();
@@ -51,20 +54,18 @@ namespace Services.Transactions
         }
 
 
-        public async Task<TransactionCategoryDto?> Update(TransactionCategoryDto transactionDto)
+        public async Task<TransactionCategoryDto?> Update(TransactionCategoryDto transcationCategoryDto)
         {
-            if (!transactionDto.Id.HasValue)
-            {
-                throw new Exception("Cannot update an entity without an ID");
-            }
+            ValidationService.ThrowIfInvalidForUpdate(transcationCategoryDto);
 
-            var entity = await dbContext.TransactionCategories.FindAsync(transactionDto.Id.Value);
-            if (entity == null)
+
+            var category = await FindWithCriteriaAsync(transcationCategoryDto.Id.Value);
+            if (category == null)
             {
                 return null;
             }
 
-            var entityWithUpdatedValues = mappingService.ProjectDtoToCategory(transactionDto, entity);
+            var entityWithUpdatedValues = mappingService.ProjectDtoToCategory(transcationCategoryDto, category);
             await dbContext.SaveChangesAsync();
 
             return mappingService.MapCategoryToDto(entityWithUpdatedValues);
@@ -80,6 +81,13 @@ namespace Services.Transactions
 
             entity.IsDeleted = true;
             await dbContext.SaveChangesAsync();
+        }
+
+        private Task<TransactionCategory?> FindWithCriteriaAsync(int id)
+        {
+            return dbContext.TransactionCategories
+                .Include(x => x.CriteriaToMatchOn)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
