@@ -1,13 +1,9 @@
 ﻿using Common.Dto.Transactions;
 using Common.Enums;
 using DataAccess.EF.DbContextImpl;
-using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces.Common;
 using Services.Interfaces.Transactions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Services.Transactions
 {
@@ -15,19 +11,25 @@ namespace Services.Transactions
     {
         public async Task<TransactionPropertyDto?> Get(int id)
         {
-            var property = await dbContext.TransactionProperties.FindAsync(id);
+            var property = await dbContext
+                .TransactionProperties
+                .Include(tp => tp.CriteriaToMatchOn)
+                .FirstOrDefaultAsync(tp => tp.Id == id);
+
             if (property == null) 
             {
                 return null;
             }
 
             return mappingService.MapPropertyToDto(property);
-
         }
 
         public async Task<List<TransactionPropertyDto>> GetAll()
         {
-            var properties = await dbContext.TransactionProperties.ToListAsync();
+            var properties = await dbContext
+                .TransactionProperties
+                .Include(t => t.CriteriaToMatchOn)
+                .ToListAsync();
 
             return properties
                 .Select(mappingService.MapPropertyToDto)
@@ -57,7 +59,11 @@ namespace Services.Transactions
                 throw new Exception("Cannot update an entity without an ID");
             }
 
-            var entity = await dbContext.TransactionProperties.FindAsync(transactionDto.Id.Value);
+            var entity = await dbContext
+                .TransactionProperties
+                .Include(tp => tp.CriteriaToMatchOn)
+                .FirstOrDefaultAsync(tp => tp.Id == transactionDto.Id);
+
             if (entity == null)
             {
                 return null;

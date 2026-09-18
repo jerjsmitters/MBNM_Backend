@@ -1,10 +1,12 @@
 ﻿using Common.Dto.ChangeRequest;
+using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.ChangeRequestEntities.Line;
 using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text;
 
 namespace DataAccess.EF.DbContextImpl
@@ -20,6 +22,29 @@ namespace DataAccess.EF.DbContextImpl
         public DbSet<TransactionProperty> TransactionProperties { get; set; }
         public DbSet<TransactionEvidence> TransactionEvidence { get; set; }
         public DbSet<MatchingCriteria> MatchingCriteria { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries()
+                      .Where(x => x.Entity is EntityBase)
+                      .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                var entity = entry.Entity as EntityBase;
+
+                if (entry.State == EntityState.Added)
+                {
+                    entity.CreatedOn = DateTime.UtcNow;
+                }
+                else
+                {
+                    entity.UpdatedOn = DateTime.UtcNow;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

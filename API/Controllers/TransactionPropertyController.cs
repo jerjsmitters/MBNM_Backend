@@ -10,7 +10,7 @@ namespace API.Controllers
     [ApiController]
     public class TransactionPropertyController(ITransactionPropertyService transactionPropertyService) : ControllerBase
     {
-        [HttpGet("/{transactionPropertyId}")]
+        [HttpGet("{transactionPropertyId}")]
         public async Task<ActionResult<TransactionPropertyDto?>> Get([FromRoute] int transactionPropertyId)
         {
             var property = await transactionPropertyService.Get(transactionPropertyId);
