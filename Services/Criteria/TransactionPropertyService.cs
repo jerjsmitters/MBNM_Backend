@@ -52,7 +52,7 @@ namespace Services.Criteria
 
         public async Task<TransactionPropertyDto?> Update(TransactionPropertyDto updatedPropertyDto)
         {
-            ValidationService.ThrowIfInvalidForCreate(updatedPropertyDto);
+            ValidationService.ThrowIfInvalidForUpdate(updatedPropertyDto);
 
             var property = await FindWithCriteriaAsync(updatedPropertyDto.Id.Value);
 

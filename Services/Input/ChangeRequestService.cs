@@ -26,16 +26,49 @@ using System.Threading.Tasks;
 
 namespace Services.Input
 {
-    //TBI
     public class ChangeRequestService(
         EfDbContext dbContext, 
         ITransactionMatchingService transactionMatchingService, 
-        ITransactionPropertyService propertyService,
-        ITransactionCategoryService categoryService,
         IMatchingCriteriaService matchingCriteriaService,
         IChangeRequestMapper changeRequestMapper,
         ITransactionMapper transactionMapper) : IChangeRequestService
     {
+
+        public async Task<ChangeRequestDto?> Get(int id)
+        {
+            var changeRequest = await dbContext
+                .ChangeRequests
+                .Include(cr => cr.CreateLines)
+                .Include(cr => cr.UpdateLines)
+                .Include(cr => cr.DeleteLines)
+                .FirstOrDefaultAsync(cr => cr.Id == id);
+
+            if (changeRequest == null)
+            {
+                return null;
+            }
+
+            return changeRequestMapper.MapChangeRequestToDto(changeRequest);
+        }
+
+        public async Task<List<ChangeRequestDto>> GetAll()
+        {
+            var changeRequest = await dbContext
+                .ChangeRequests
+                .Include(cr => cr.CreateLines)
+                .Include(cr => cr.UpdateLines)
+                .Include(cr => cr.DeleteLines)
+                .ToListAsync();
+
+            if (!changeRequest.Any())
+            {
+                return [];
+            }
+
+            return changeRequest
+                .Select(changeRequestMapper.MapChangeRequestToDto)
+                .ToList();
+        }
 
         public async Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput)
         {
@@ -74,7 +107,7 @@ namespace Services.Input
             //add requests
             var addRequests = new List<Transaction>();
             foreach (ChangeRequestCreateLine addRequest in changeRequest.CreateLines ?? [])
-            {           
+            {
                 if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, addRequest))
                 {
                     addRequest.RequestState = ChangeRequestState.DENIED;
@@ -144,6 +177,7 @@ namespace Services.Input
                 results.Add(result);
             }
 
+
             await dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -154,6 +188,12 @@ namespace Services.Input
         // ========================== PRIVATE FNS ===========================//
         private ChangeRequestDto GenerateChangeRequest(List<InputTransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
+            var allInputReferences = inputTransactions.Select(it => it.Reference);
+
+            var propertiesMap = matchingCriteriaService.GetMatchingPropertiesMapByReferences(allInputReferences);
+            var categoriesMap = matchingCriteriaService.GetMatchingCategoriesMapByReferences(allInputReferences);
+
+
             //1) Add operations
             var needToBeAdded = inputTransactions
                 .Where(it => !persistedTransactions.Any(pt => transactionMatchingService.InputTransactionMatchesPersisted(it, pt)))
@@ -165,9 +205,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
-                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
-
+                        ProposedCategories = categoriesMap[t.Reference],
+                        ProposedProperties = propertiesMap[t.Reference]
                     }
                 )
                 .ToList();
@@ -175,7 +214,7 @@ namespace Services.Input
 
             //2) Update Operations
             var needToBeUpdate = inputTransactions
-                .Where(it => persistedTransactions.Any(pt => transactionMatchingService.PersistedTransactionNeedsUpdatingByInput(it, pt))) 
+                .Where(it => persistedTransactions.Any(pt => transactionMatchingService.PersistedTransactionNeedsUpdatingByInput(it, pt)))
                 .Select(
                     t => new ChangeRequestUpdateLineDto
                     {
@@ -184,8 +223,8 @@ namespace Services.Input
                         ProposedReference = t.Reference,
                         ProposedSequence = t.Sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = matchingCriteriaService.GetMatchingCategoriesByReference(t.Reference),
-                        ProposedProperties = matchingCriteriaService.GetMatchingPropertiesByReference(t.Reference)
+                        ProposedCategories = categoriesMap[t.Reference],
+                        ProposedProperties = propertiesMap[t.Reference]
                     }
                 )
                 .ToList();
@@ -222,6 +261,9 @@ namespace Services.Input
 
             var changeRequestEntity = changeRequestMapper.MapDtoToChangeRequest(changeRequest);
 
+            //attach the untracked many-to-many properties
+            changeRequestEntity = AttachManyToManyProperties(changeRequestEntity);
+
             var savedRequest = await dbContext.AddAsync(changeRequestEntity);
             await dbContext.SaveChangesAsync();
 
@@ -238,14 +280,62 @@ namespace Services.Input
                 .Where(t => t.Date <= startDate && t.Date >= endDate)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.Sequence)
+                .AsNoTracking()
                 .Select(t => transactionMapper.MapTransactionToDto(t))
                 .ToList();
         }
 
-        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => changeRequestMapper.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+        private ChangeRequest AttachManyToManyProperties(ChangeRequest changeRequest)
+        {
+            //properties
+            var createLineProperties = changeRequest
+                .CreateLines
+                .SelectMany(x => x.TransactionProperties)
+                .Select(x => x.Id);
+
+            var updateLineProperties = changeRequest
+                .UpdateLines
+                .SelectMany(x => x.TransactionProperties)
+                .Select(x => x.Id);
+
+            var allPropertyIds = createLineProperties.Union(updateLineProperties).Distinct();
+            var allProperties = dbContext.TransactionProperties.Where(x => allPropertyIds.Contains(x.Id)).ToList();
+
+
+            //categories
+            var createLineCategories = changeRequest
+                .CreateLines
+                .SelectMany(x => x.TransactionCategories)
+                .Select(x => x.Id);
+
+            var updateLineCategories = changeRequest
+                .UpdateLines
+                .SelectMany(x => x.TransactionCategories)
+                .Select(x => x.Id);
+
+            var allCategoryIds = createLineCategories.Union(updateLineCategories).Distinct();
+            var allCategories = dbContext.TransactionCategories.Where(x => allCategoryIds.Contains(x.Id)).ToList();
+
+            //
+            foreach (var createLine in changeRequest.CreateLines)
+            {
+                createLine.TransactionProperties = allProperties.Where(ap => createLine.TransactionProperties.Any(cltp => ap.Id == cltp.Id)).ToList();
+                createLine.TransactionCategories = allCategories.Where(ac => createLine.TransactionCategories.Any(cltc => ac.Id == cltc.Id)).ToList();
+            }
+
+            foreach (var updateLine in changeRequest.UpdateLines)
+            {
+                updateLine.TransactionProperties = allProperties.Where(ap => updateLine.TransactionProperties.Any(cltp => ap.Id == cltp.Id)).ToList();
+                updateLine.TransactionCategories = allCategories.Where(ac => updateLine.TransactionCategories.Any(cltc => ac.Id == cltc.Id)).ToList();
+            }
+
+            return changeRequest;
+        }
 
 
         // ============ HELPER FNS ================//
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => changeRequestMapper.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+
         private static bool NothingToProcess(List<ChangeRequestLine> requestLines)
         {
             if (requestLines.Count == 0)
@@ -288,5 +378,6 @@ namespace Services.Input
 
             return Tuple.Create(startDate, endDate);
         }
+        
     }
 }

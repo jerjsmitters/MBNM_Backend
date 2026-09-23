@@ -1,4 +1,5 @@
 ﻿using Common.Dto.Criteria;
+using Common.Dto.Transactions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces.Transactions;
@@ -8,12 +9,13 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionController(ITransactionPropertyService transactionPropertyService) : ControllerBase
+    public class TransactionController(ITransactionService transactionService) : ControllerBase
     {
-        [HttpGet("/{transactionPropertyId}")]
-        public async Task<ActionResult<TransactionPropertyDto?>> Get([FromRoute] int transactionPropertyId)
+
+        [HttpGet("{transactionId}")]
+        public async Task<ActionResult<TransactionDto>> Get([FromRoute] int transactionId)
         {
-            var property = await transactionPropertyService.Get(transactionPropertyId);
+            var property = await transactionService.Get(transactionId);
             if (property == null)
             {
                 return NotFound();
@@ -23,30 +25,17 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<TransactionPropertyDto>>> GetAll()
+        public async Task<ActionResult<List<TransactionDto>>> GetAll()
         {
-            var results = await transactionPropertyService.GetAll();
+            var results = await transactionService.GetAll();
             return Ok(results);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<List<TransactionPropertyDto>>> Add([FromBody] TransactionPropertyDto transactionProperty)
-        {
-            var createdEntity = await transactionPropertyService.Add(transactionProperty);
-            return Ok(createdEntity);
-        }
 
-        [HttpPut]
-        public async Task<ActionResult<List<TransactionPropertyDto>>> Update([FromBody] TransactionPropertyDto transactionProperty)
+        [HttpDelete("{transactionId}")]
+        public async Task<ActionResult> Delete([FromRoute] int transactionId)
         {
-            var createdEntity = await transactionPropertyService.Update(transactionProperty);
-            return Ok(createdEntity);
-        }
-
-        [HttpDelete("/{transactionPropertyId}")]
-        public async Task<ActionResult> Delete([FromRoute] int transactionPropertyId)
-        {
-            await transactionPropertyService.Delete(transactionPropertyId);
+            await transactionService.Delete(transactionId);
             return Ok();
         }
     }

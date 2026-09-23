@@ -55,5 +55,10 @@ namespace DataAccess.EF.DbContextImpl
             base.OnModelCreating(modelBuilder);
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
     }
 }

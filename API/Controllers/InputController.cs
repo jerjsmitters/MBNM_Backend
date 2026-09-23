@@ -11,7 +11,7 @@ namespace API.Controllers
     public class InputController (IInputService inputService) : ControllerBase
     {
         [HttpPost]
-        [Route("")]
+        [Route("input-csv")]
         public async Task<ActionResult<ChangeRequestDto>> InputCsv([FromBody] InputCsvDto inputCsv)
         {
             if (inputCsv == null || string.IsNullOrWhiteSpace(inputCsv.CsvLines)) 

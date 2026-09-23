@@ -10,6 +10,8 @@ namespace Services.Interfaces.Input
 {
     public interface IChangeRequestService
     {
+        Task<ChangeRequestDto?> Get(int id);
+        Task<List<ChangeRequestDto>> GetAll();
         Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput);
 
         Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(ApplyChangeRequestDto changeRequest);

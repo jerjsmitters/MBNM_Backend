@@ -1,7 +1,12 @@
-1) category assignment and property assignemnt (+crud for both)
-2) 
+>>V0
+1) Sequence: What is the purpose of it? How is it defined? Properly implement DetermineSequence
+2) Walkthru CSV input flow with test file (found in My Documents)
+3) Front end for changelog 
+4) Test apply/deny changelog
 
-3) Console App
+
+>>V1
+1)) invoice generation
+2) events
+3) changelog missing prop/category flow 
 4) Unit testing all services thus far + general testing
-
-6) Change Request Versioning/Rollback
