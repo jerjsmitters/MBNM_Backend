@@ -17,7 +17,7 @@ namespace Services.Common
                 Id = category.Id,
                 UpdatedOn = category.UpdatedOn,
                 Description = category.Description,
-                CriteriaToMatchOn = category.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList()
+                CriteriaToMatchOn = category.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList() ?? []
             };
         }
 
@@ -29,7 +29,7 @@ namespace Services.Common
                 Description = category.Description,
                 CreatedOn = category.CreatedOn,
                 UpdatedOn = category.UpdatedOn,
-                CriteriaToMatchOn = category.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList()
+                CriteriaToMatchOn = category.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList() ?? []
             };
         }
 

@@ -69,6 +69,9 @@ namespace Services.Common
             ProposedReference = createLine.Reference,
             CreatedOn = createLine.CreatedOn,
             UpdatedOn = createLine.UpdatedOn
+            ,
+            ProposedCategories = createLine.TransactionCategories?.Select(transactionCategoryMapper.MapCategoryToDto).ToList() ?? new(),
+            ProposedProperties = createLine.TransactionProperties?.Select(transactionPropertyMapper.MapPropertyToDto).ToList() ?? new()
         };
 
         private ChangeRequestUpdateLineDto MapToUpdateLineDto(ChangeRequestUpdateLine updateLine) => new()
@@ -82,6 +85,9 @@ namespace Services.Common
             CreatedOn = updateLine.CreatedOn,
             UpdatedOn = updateLine.UpdatedOn,
             TransactionToUpdate = transactionMapper.MapTransactionToDto(updateLine.Transaction)
+            ,
+            ProposedCategories = updateLine.TransactionCategories?.Select(transactionCategoryMapper.MapCategoryToDto).ToList() ?? new(),
+            ProposedProperties = updateLine.TransactionProperties?.Select(transactionPropertyMapper.MapPropertyToDto).ToList() ?? new()
         };
 
         private ChangeRequestDeleteLineDto MapToDeleteLineDto(ChangeRequestDeleteLine deleteLine) => new()

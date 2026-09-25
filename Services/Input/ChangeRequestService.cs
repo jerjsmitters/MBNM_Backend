@@ -39,7 +39,13 @@ namespace Services.Input
             var changeRequest = await dbContext
                 .ChangeRequests
                 .Include(cr => cr.CreateLines)
+                .ThenInclude(cl => cl.TransactionProperties)
+                .Include(cr => cr.CreateLines)
+                .ThenInclude(cl => cl.TransactionCategories)
                 .Include(cr => cr.UpdateLines)
+                .ThenInclude(cl => cl.TransactionProperties)
+                .Include(cr => cr.UpdateLines)
+                .ThenInclude(cl => cl.TransactionCategories)
                 .Include(cr => cr.DeleteLines)
                 .FirstOrDefaultAsync(cr => cr.Id == id);
 

@@ -37,6 +37,10 @@ namespace DataAccess.EF.ModelConfigurations.Base
             builder
               .Property(x => x.Reference)
               .IsRequired();
+
+            builder.HasMany(x => x.TransactionProperties);
+            builder.HasMany(x => x.TransactionCategories);
+
         }
     }
 }

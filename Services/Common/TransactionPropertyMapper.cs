@@ -17,7 +17,7 @@ namespace Services.Common
                 Description = property.Description,
                 CreatedOn = property.CreatedOn,
                 UpdatedOn = property.UpdatedOn,
-                CriteriaToMatchOn = property.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList()
+                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList() ?? []
             };
         }
 
@@ -29,7 +29,7 @@ namespace Services.Common
                 Description = property.Description,
                 CreatedOn = property.CreatedOn,
                 UpdatedOn = property.UpdatedOn,
-                CriteriaToMatchOn = property.CriteriaToMatchOn.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList()
+                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList() ?? []
             };
         }
 

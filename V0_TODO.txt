@@ -1,7 +1,9 @@
 >>V0
-1) Sequence: What is the purpose of it? How is it defined? Properly implement DetermineSequence
-2) Walkthru CSV input flow with test file (found in My Documents)
-3) Front end for changelog 
+1) change log needs to return the properties/cateogires
+2) need to test update entries (create new data file)
+=> changes off the back of this 
+3) need to update delete entries (create new data file)
+=> changes off the back of this 
 4) Test apply/deny changelog
 
 
