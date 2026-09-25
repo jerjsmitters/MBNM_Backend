@@ -34,7 +34,7 @@ namespace Services.Input
         ITransactionMapper transactionMapper) : IChangeRequestService
     {
 
-        public async Task<ChangeRequestDto?> Get(int id)
+        public async Task<ChangeRequestDto?> GetForApproval(int id)
         {
             var changeRequest = await dbContext
                 .ChangeRequests
@@ -53,6 +53,7 @@ namespace Services.Input
 
         public async Task<List<ChangeRequestDto>> GetAll()
         {
+
             var changeRequest = await dbContext
                 .ChangeRequests
                 .Include(cr => cr.CreateLines)

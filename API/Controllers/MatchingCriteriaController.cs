@@ -8,17 +8,6 @@ namespace API.Controllers
     [ApiController]
     public class MatchingCriteriaController
     {
-        [HttpGet("modes")]
-        public ActionResult<List<GenericEnum>> GetMatchingCriteriaModes()
-        {
-            return Enum
-                .GetValues<MatchingCriteriaMode>()
-                .Select(x => new GenericEnum
-                {
-                    Name = x.ToString(),
-                    Value = (int)x
-                })
-                .ToList();
-        }
+
     }
 }

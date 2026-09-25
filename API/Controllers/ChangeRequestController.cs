@@ -18,7 +18,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ChangeRequestDto?>> Get(int id)
         {
-            var changeRequest = await changeRequestService.Get(id);
+            var changeRequest = await changeRequestService.GetForApproval(id);
 
             return Ok(changeRequest);
         }
