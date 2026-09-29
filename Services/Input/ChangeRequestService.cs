@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,18 +37,7 @@ namespace Services.Input
 
         public async Task<ChangeRequestDto?> GetForApproval(int id)
         {
-            var changeRequest = await dbContext
-                .ChangeRequests
-                .Include(cr => cr.CreateLines)
-                .ThenInclude(cl => cl.TransactionProperties)
-                .Include(cr => cr.CreateLines)
-                .ThenInclude(cl => cl.TransactionCategories)
-                .Include(cr => cr.UpdateLines)
-                .ThenInclude(cl => cl.TransactionProperties)
-                .Include(cr => cr.UpdateLines)
-                .ThenInclude(cl => cl.TransactionCategories)
-                .Include(cr => cr.DeleteLines)
-                .FirstOrDefaultAsync(cr => cr.Id == id);
+            var changeRequest = await GetInternal(id);
 
             if (changeRequest == null)
             {
@@ -95,14 +85,14 @@ namespace Services.Input
         }
 
         //approval process
-        public async Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(ApplyChangeRequestDto applyChangeRequestInfo)
+        public async Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(CommitChangeRequestDto applyChangeRequestInfo)
         {
             var results = new List<ChangeRequestCommitResultDto>();
             ChangeRequestCommitResultDto result;
 
             await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var changeRequest = await dbContext.ChangeRequests.FindAsync(applyChangeRequestInfo.ChangeRequestId)
+            var changeRequest = await GetInternal(applyChangeRequestInfo.ChangeRequestId)
                 ?? throw new InvalidOperationException($"Change Request with Id = {applyChangeRequestInfo.ChangeRequestId} doesn't exist.");
 
             var changeRequestLines = GetChangeRequestLines(changeRequest);
@@ -123,6 +113,7 @@ namespace Services.Input
 
                 var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
                 addRequests.Add(transactionToAdd);
+                addRequest.RequestState = ChangeRequestState.COMMITED;
 
                 result = new ChangeRequestCommitResultDto
                 {
@@ -193,6 +184,23 @@ namespace Services.Input
 
 
         // ========================== PRIVATE FNS ===========================//
+        private Task<ChangeRequest?> GetInternal(int id)
+        {
+            return dbContext
+                .ChangeRequests
+                .Include(cr => cr.CreateLines)
+                .ThenInclude(cl => cl.TransactionProperties)
+                .Include(cr => cr.CreateLines)
+                .ThenInclude(cl => cl.TransactionCategories)
+                .Include(cr => cr.UpdateLines)
+                .ThenInclude(cl => cl.TransactionProperties)
+                .Include(cr => cr.UpdateLines)
+                .ThenInclude(cl => cl.TransactionCategories)
+                .Include(cr => cr.DeleteLines)
+                .FirstOrDefaultAsync(cr => cr.Id == id);
+
+            
+        }
         private ChangeRequestDto GenerateChangeRequest(List<InputTransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
             var allInputReferences = inputTransactions.Select(it => it.Reference);

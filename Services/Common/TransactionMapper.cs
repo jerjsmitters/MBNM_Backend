@@ -19,8 +19,8 @@ namespace Services.Common
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
 
-                AssignnedCategories = transaction.Categories.Select(categoryMapper.MapDtoToCategory).ToList(),
-                AssignedProperties = transaction.Properties.Select(propertyMapper.MapDtoToProperty).ToList(),
+                AssignedCategories = transaction.Categories.Select(categoryMapper.MapDtoToCategory).ToList(), //UNTRACKED
+                AssignedProperties = transaction.Properties.Select(propertyMapper.MapDtoToProperty).ToList(), //UNTRACKED
 
                 CreatedOn = transaction.CreatedOn,
                 UpdatedOn = transaction.UpdatedOn
@@ -37,7 +37,7 @@ namespace Services.Common
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
 
-                Categories = transaction.AssignnedCategories.Select(categoryMapper.MapCategoryToDto).ToList(),
+                Categories = transaction.AssignedCategories.Select(categoryMapper.MapCategoryToDto).ToList(),
                 Properties = transaction.AssignedProperties.Select(propertyMapper.MapPropertyToDto).ToList(),
 
                 CreatedOn = transaction.CreatedOn,
@@ -45,6 +45,17 @@ namespace Services.Common
             };
         }
 
+        public Transaction ProjectDtoToTransaction(TransactionDto incoming, Transaction entity)
+        {
+            entity.Amount = incoming.Amount;
+            entity.Date = incoming.Date;
+            entity.Reference = incoming.Reference;
+            entity.Sequence = incoming.Sequence;
 
+            entity.AssignedCategories = incoming.Categories.Select(categoryMapper.MapDtoToCategory).ToList(); //untracked
+            entity.AssignedProperties = incoming.Properties.Select(propertyMapper.MapDtoToProperty).ToList(); //untracked
+
+            return entity;
+        }
     }
 }

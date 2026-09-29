@@ -1,4 +1,6 @@
-﻿using Common.Dto.Transactions;
+﻿using Common.Dto.Criteria;
+using Common.Dto.Transactions;
+using DataAccess.Models.Criteria;
 using DataAccess.Models.Transactions;
 using System;
 using System.Collections.Generic;
@@ -10,5 +12,6 @@ namespace Services.Interfaces.Common
     {
         TransactionDto MapTransactionToDto(Transaction transaction);
         Transaction MapDtoToTransaction(TransactionDto transaction);
+        Transaction ProjectDtoToTransaction(TransactionDto incoming, Transaction entity);
     }
 }

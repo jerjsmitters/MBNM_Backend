@@ -237,7 +237,7 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("ChangeRequestUpdateLines");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.Transactions.MatchingCriteria", b =>
+            modelBuilder.Entity("DataAccess.Models.Criteria.MatchingCriteria", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -264,6 +264,58 @@ namespace DataAccess.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MatchingCriteria");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.Criteria.TransactionCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TransactionCategories");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.Criteria.TransactionProperty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TransactionProperties");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Transactions.Transaction", b =>
@@ -300,32 +352,6 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.Transactions.TransactionCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionCategories");
-                });
-
             modelBuilder.Entity("DataAccess.Models.Transactions.TransactionEvidence", b =>
                 {
                     b.Property<int>("Id")
@@ -355,32 +381,6 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("TransactionId");
 
                     b.ToTable("TransactionEvidence");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.Transactions.TransactionProperty", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionProperties");
                 });
 
             modelBuilder.Entity("MatchingCriteriaTransactionCategory", b =>
@@ -415,13 +415,13 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("TransactionTransactionCategory", b =>
                 {
-                    b.Property<int>("AssignnedCategoriesId")
+                    b.Property<int>("AssignedCategoriesId")
                         .HasColumnType("int");
 
                     b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
-                    b.HasKey("AssignnedCategoriesId", "TransactionId");
+                    b.HasKey("AssignedCategoriesId", "TransactionId");
 
                     b.HasIndex("TransactionId");
 
@@ -451,7 +451,7 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionCategory", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionCategory", null)
                         .WithMany()
                         .HasForeignKey("TransactionCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -466,7 +466,7 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionProperty", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionProperty", null)
                         .WithMany()
                         .HasForeignKey("TransactionPropertiesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -481,7 +481,7 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionCategory", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionCategory", null)
                         .WithMany()
                         .HasForeignKey("TransactionCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -496,7 +496,7 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionProperty", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionProperty", null)
                         .WithMany()
                         .HasForeignKey("TransactionPropertiesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -565,13 +565,13 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("MatchingCriteriaTransactionCategory", b =>
                 {
-                    b.HasOne("DataAccess.Models.Transactions.MatchingCriteria", null)
+                    b.HasOne("DataAccess.Models.Criteria.MatchingCriteria", null)
                         .WithMany()
                         .HasForeignKey("CriteriaToMatchOnId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionCategory", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionCategory", null)
                         .WithMany()
                         .HasForeignKey("TransactionCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -580,13 +580,13 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("MatchingCriteriaTransactionProperty", b =>
                 {
-                    b.HasOne("DataAccess.Models.Transactions.MatchingCriteria", null)
+                    b.HasOne("DataAccess.Models.Criteria.MatchingCriteria", null)
                         .WithMany()
                         .HasForeignKey("CriteriaToMatchOnId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Models.Transactions.TransactionProperty", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionProperty", null)
                         .WithMany()
                         .HasForeignKey("TransactionPropertiesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -595,9 +595,9 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("TransactionTransactionCategory", b =>
                 {
-                    b.HasOne("DataAccess.Models.Transactions.TransactionCategory", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionCategory", null)
                         .WithMany()
-                        .HasForeignKey("AssignnedCategoriesId")
+                        .HasForeignKey("AssignedCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -610,7 +610,7 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("TransactionTransactionProperty", b =>
                 {
-                    b.HasOne("DataAccess.Models.Transactions.TransactionProperty", null)
+                    b.HasOne("DataAccess.Models.Criteria.TransactionProperty", null)
                         .WithMany()
                         .HasForeignKey("AssignedPropertiesId")
                         .OnDelete(DeleteBehavior.Cascade)

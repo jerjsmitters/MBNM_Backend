@@ -50,7 +50,7 @@ namespace Services.Common
             transaction.Sequence = changeRequestLine.Sequence;
             transaction.Reference = changeRequestLine.Reference;
             transaction.Amount = changeRequestLine.Amount;
-            transaction.AssignnedCategories = changeRequestLine.TransactionCategories;
+            transaction.AssignedCategories = changeRequestLine.TransactionCategories;
             transaction.AssignedProperties = changeRequestLine.TransactionProperties;
 
             return transaction;

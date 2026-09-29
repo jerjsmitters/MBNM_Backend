@@ -31,19 +31,19 @@ namespace API.Controllers
             return Ok(changeRequests);
         }
 
-        [HttpPost("apply")]
-        public async Task<ActionResult<List<ChangeRequestCommitResultDto>>> ApplyChangeRequest(ApplyChangeRequestDto applyChangeRequest)
+        [HttpPost("commit")]
+        public async Task<ActionResult<List<ChangeRequestCommitResultDto>>> ApplyChangeRequest(CommitChangeRequestDto commitChangeRequestDto)
         {
-            var nothingToDo = ListHelpers.IsNullOrEmpty(applyChangeRequest?.CreateLines) 
-                && ListHelpers.IsNullOrEmpty(applyChangeRequest?.UpdateLines) 
-                && ListHelpers.IsNullOrEmpty(applyChangeRequest?.DeleteLines);
+            var nothingToDo = ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.CreateLines) 
+                && ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.UpdateLines) 
+                && ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.DeleteLines);
 
             if (nothingToDo) 
             {
                 return BadRequest();
             }
 
-            var results = await changeRequestService.ApplyChangeRequest(applyChangeRequest);
+            var results = await changeRequestService.ApplyChangeRequest(commitChangeRequestDto);
 
             return Ok(results);
         }

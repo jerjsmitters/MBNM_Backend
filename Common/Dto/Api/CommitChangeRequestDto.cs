@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Common.Dto.Api
 {
-    public record ApplyChangeRequestDto
+    public record CommitChangeRequestDto
     {
         public int ChangeRequestId { get; init;  }
         public List<ApplyChangeRequestLineDto> CreateLines { get; init; }

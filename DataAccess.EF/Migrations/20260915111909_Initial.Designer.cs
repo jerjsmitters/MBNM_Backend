@@ -418,13 +418,13 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("TransactionTransactionCategory", b =>
                 {
-                    b.Property<int>("AssignnedCategoriesId")
+                    b.Property<int>("AssignedCategoriesId")
                         .HasColumnType("int");
 
                     b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
-                    b.HasKey("AssignnedCategoriesId", "TransactionId");
+                    b.HasKey("AssignedCategoriesId", "TransactionId");
 
                     b.HasIndex("TransactionId");
 
@@ -600,7 +600,7 @@ namespace DataAccess.EF.Migrations
                 {
                     b.HasOne("DataAccess.Models.Transactions.TransactionCategory", null)
                         .WithMany()
-                        .HasForeignKey("AssignnedCategoriesId")
+                        .HasForeignKey("AssignedCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -275,15 +275,15 @@ namespace DataAccess.EF.Migrations
                 name: "TransactionTransactionCategory",
                 columns: table => new
                 {
-                    AssignnedCategoriesId = table.Column<int>(type: "int", nullable: false),
+                    AssignedCategoriesId = table.Column<int>(type: "int", nullable: false),
                     TransactionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransactionTransactionCategory", x => new { x.AssignnedCategoriesId, x.TransactionId });
+                    table.PrimaryKey("PK_TransactionTransactionCategory", x => new { x.AssignedCategoriesId, x.TransactionId });
                     table.ForeignKey(
                         name: "FK_TransactionTransactionCategory_TransactionCategories_Assignn~",
-                        column: x => x.AssignnedCategoriesId,
+                        column: x => x.AssignedCategoriesId,
                         principalTable: "TransactionCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);

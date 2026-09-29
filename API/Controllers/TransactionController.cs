@@ -31,6 +31,13 @@ namespace API.Controllers
             return Ok(results);
         }
 
+        [HttpPut]
+        public async Task<ActionResult<List<TransactionDto>>> GetAll([FromBody] TransactionDto transaction)
+        {
+            var results = await transactionService.Update(transaction);
+            return Ok(results);
+        }
+
 
         [HttpDelete("{transactionId}")]
         public async Task<ActionResult> Delete([FromRoute] int transactionId)

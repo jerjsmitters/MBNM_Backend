@@ -19,7 +19,7 @@ namespace Common.Dto.ChangeRequest
         public List<ChangeRequestUpdateLineDto> UpdateLines { get; set; }
         public List<ChangeRequestDeleteLineDto> DeleteLines { get; set; }
 
-        public bool IsCommited => CreateLinesCommitted && UpdateLinesCommitted && DeleteLinesCommitted;
+        public bool IsCommitted => CreateLinesCommitted && UpdateLinesCommitted && DeleteLinesCommitted;
 
         private bool CreateLinesCommitted => !CreateLines.Any() || CreateLines.All(x => x.RequestState != Enums.ChangeRequestState.PENDING);
         private bool UpdateLinesCommitted => !UpdateLines.Any() || UpdateLines.All(x => x.RequestState != Enums.ChangeRequestState.PENDING);

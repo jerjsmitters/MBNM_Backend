@@ -1,10 +1,15 @@
 >>V0
-1) change log needs to return the properties/cateogires
+1) fix transaction crud ops
+>datetime not persisted correctly
+>sequence not adjusted on 
+
+
+
 2) need to test update entries (create new data file)
 => changes off the back of this 
-3) need to update delete entries (create new data file)
+3) need to test delete entries (create new data file)
 => changes off the back of this 
-4) Test apply/deny changelog
+4) manually assign category on the changelog screen
 
 
 >>V1

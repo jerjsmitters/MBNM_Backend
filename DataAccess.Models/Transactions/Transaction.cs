@@ -13,7 +13,7 @@ namespace DataAccess.Models.Transactions
         public int Sequence { get; set; }
         public string Reference { get; set; }
 
-        public List<TransactionCategory> AssignnedCategories { get; set; }
+        public List<TransactionCategory> AssignedCategories { get; set; }
         public List<TransactionProperty> AssignedProperties { get; set; }
         public List<TransactionEvidence> Evidence { get; set; }
     }

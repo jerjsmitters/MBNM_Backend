@@ -14,6 +14,6 @@ namespace Services.Interfaces.Input
         Task<List<ChangeRequestDto>> GetAll();
         Task<ChangeRequestDto> GenerateChangeRequestFromInputTransactions(InputTransactionsDto dataInput);
 
-        Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(ApplyChangeRequestDto changeRequest);
+        Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(CommitChangeRequestDto changeRequest);
     }
 }
