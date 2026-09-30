@@ -49,36 +49,6 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("ChangeRequestCreateLineTransactionProperty");
                 });
 
-            modelBuilder.Entity("ChangeRequestUpdateLineTransactionCategory", b =>
-                {
-                    b.Property<int>("ChangeRequestUpdateLineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionCategoriesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ChangeRequestUpdateLineId", "TransactionCategoriesId");
-
-                    b.HasIndex("TransactionCategoriesId");
-
-                    b.ToTable("ChangeRequestUpdateLineTransactionCategory");
-                });
-
-            modelBuilder.Entity("ChangeRequestUpdateLineTransactionProperty", b =>
-                {
-                    b.Property<int>("ChangeRequestUpdateLineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionPropertiesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ChangeRequestUpdateLineId", "TransactionPropertiesId");
-
-                    b.HasIndex("TransactionPropertiesId");
-
-                    b.ToTable("ChangeRequestUpdateLineTransactionProperty");
-                });
-
             modelBuilder.Entity("DataAccess.Models.ChangeRequestEntities.ChangeRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -118,8 +88,8 @@ namespace DataAccess.EF.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -183,58 +153,6 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("TransactionId");
 
                     b.ToTable("ChangeRequestDeleteLines");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.ChangeRequestEntities.Line.ChangeRequestUpdateLine", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<int>("ChangeRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("RequestState")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("Sequence")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChangeRequestId");
-
-                    b.HasIndex("TransactionId");
-
-                    b.ToTable("ChangeRequestUpdateLines");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Criteria.MatchingCriteria", b =>
@@ -330,8 +248,8 @@ namespace DataAccess.EF.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -473,36 +391,6 @@ namespace DataAccess.EF.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ChangeRequestUpdateLineTransactionCategory", b =>
-                {
-                    b.HasOne("DataAccess.Models.ChangeRequestEntities.Line.ChangeRequestUpdateLine", null)
-                        .WithMany()
-                        .HasForeignKey("ChangeRequestUpdateLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Criteria.TransactionCategory", null)
-                        .WithMany()
-                        .HasForeignKey("TransactionCategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ChangeRequestUpdateLineTransactionProperty", b =>
-                {
-                    b.HasOne("DataAccess.Models.ChangeRequestEntities.Line.ChangeRequestUpdateLine", null)
-                        .WithMany()
-                        .HasForeignKey("ChangeRequestUpdateLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Criteria.TransactionProperty", null)
-                        .WithMany()
-                        .HasForeignKey("TransactionPropertiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DataAccess.Models.ChangeRequestEntities.Line.ChangeRequestCreateLine", b =>
                 {
                     b.HasOne("DataAccess.Models.ChangeRequestEntities.ChangeRequest", "ChangeRequest")
@@ -518,25 +406,6 @@ namespace DataAccess.EF.Migrations
                 {
                     b.HasOne("DataAccess.Models.ChangeRequestEntities.ChangeRequest", "ChangeRequest")
                         .WithMany("DeleteLines")
-                        .HasForeignKey("ChangeRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Transactions.Transaction", "Transaction")
-                        .WithMany()
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChangeRequest");
-
-                    b.Navigation("Transaction");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.ChangeRequestEntities.Line.ChangeRequestUpdateLine", b =>
-                {
-                    b.HasOne("DataAccess.Models.ChangeRequestEntities.ChangeRequest", "ChangeRequest")
-                        .WithMany("UpdateLines")
                         .HasForeignKey("ChangeRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -628,8 +497,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("CreateLines");
 
                     b.Navigation("DeleteLines");
-
-                    b.Navigation("UpdateLines");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Transactions.Transaction", b =>

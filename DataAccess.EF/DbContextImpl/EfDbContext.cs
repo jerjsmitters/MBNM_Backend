@@ -16,7 +16,6 @@ namespace DataAccess.EF.DbContextImpl
     {
         public DbSet<ChangeRequest> ChangeRequests { get; set; }
         public DbSet<ChangeRequestCreateLine> ChangeRequestCreateLines { get; set; }
-        public DbSet<ChangeRequestUpdateLine> ChangeRequestUpdateLines { get; set; }
         public DbSet<ChangeRequestDeleteLine> ChangeRequestDeleteLines { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionCategory> TransactionCategories { get; set; }

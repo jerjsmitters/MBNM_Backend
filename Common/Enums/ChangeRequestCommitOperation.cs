@@ -7,7 +7,6 @@ namespace Common.Enums
     public enum ChangeRequestCommitOperation
     {
         ADD,
-        UPDATE,
         DELETE
     }
 }

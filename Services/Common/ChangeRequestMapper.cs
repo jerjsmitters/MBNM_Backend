@@ -16,7 +16,6 @@ namespace Services.Common
         public ChangeRequest MapDtoToChangeRequest(ChangeRequestDto changeRequest)
         {
             var createLines = changeRequest.CreateLines.Select(MapToCreateLineEntity).ToList();
-            var updateLines = changeRequest.UpdateLines.Select(MapToUpdateLineEntity).ToList();
             var deleteLines = changeRequest.DeleteLines.Select(MapToDeleteLineEntity).ToList();
             return new()
             {
@@ -24,7 +23,6 @@ namespace Services.Common
                 CreatedOn = changeRequest.CreatedOn,
                 UpdatedOn = changeRequest.UpdatedOn,
                 CreateLines = createLines,
-                UpdateLines = updateLines,
                 DeleteLines = deleteLines
             };
         }
@@ -32,7 +30,6 @@ namespace Services.Common
         public ChangeRequestDto MapChangeRequestToDto(ChangeRequest changeRequest)
         {
             var createLines = changeRequest.CreateLines.Select(MapToCreateLineDto).ToList();
-            var updateLines = changeRequest.UpdateLines.Select(MapToUpdateLineDto).ToList();
             var deleteLines = changeRequest.DeleteLines.Select(MapToDeleteLineDto).ToList();
             return new()
             {
@@ -40,7 +37,6 @@ namespace Services.Common
                 CreatedOn = changeRequest.CreatedOn,
                 UpdatedOn = changeRequest.UpdatedOn,
                 CreateLines = createLines,
-                UpdateLines = updateLines,
                 DeleteLines = deleteLines
             };
         }
@@ -52,6 +48,7 @@ namespace Services.Common
             transaction.Amount = changeRequestLine.Amount;
             transaction.AssignedCategories = changeRequestLine.TransactionCategories;
             transaction.AssignedProperties = changeRequestLine.TransactionProperties;
+            transaction.Date = changeRequestLine.Date;
 
             return transaction;
         }
@@ -72,22 +69,6 @@ namespace Services.Common
             ,
             ProposedCategories = createLine.TransactionCategories?.Select(transactionCategoryMapper.MapCategoryToDto).ToList() ?? new(),
             ProposedProperties = createLine.TransactionProperties?.Select(transactionPropertyMapper.MapPropertyToDto).ToList() ?? new()
-        };
-
-        private ChangeRequestUpdateLineDto MapToUpdateLineDto(ChangeRequestUpdateLine updateLine) => new()
-        {
-            Id = updateLine.Id,
-            RequestState = updateLine.RequestState,
-            ProposedAmount = updateLine.Amount,
-            ProposedDate = updateLine.Date,
-            ProposedSequence = updateLine.Sequence,
-            ProposedReference = updateLine.Reference,
-            CreatedOn = updateLine.CreatedOn,
-            UpdatedOn = updateLine.UpdatedOn,
-            TransactionToUpdate = transactionMapper.MapTransactionToDto(updateLine.Transaction)
-            ,
-            ProposedCategories = updateLine.TransactionCategories?.Select(transactionCategoryMapper.MapCategoryToDto).ToList() ?? new(),
-            ProposedProperties = updateLine.TransactionProperties?.Select(transactionPropertyMapper.MapPropertyToDto).ToList() ?? new()
         };
 
         private ChangeRequestDeleteLineDto MapToDeleteLineDto(ChangeRequestDeleteLine deleteLine) => new()
@@ -111,21 +92,6 @@ namespace Services.Common
             UpdatedOn = createLine.UpdatedOn,
             TransactionCategories = createLine.ProposedCategories?.Select(transactionCategoryMapper.MapDtoToCategory).ToList() ?? [],
             TransactionProperties = createLine.ProposedProperties?.Select(transactionPropertyMapper.MapDtoToProperty).ToList() ?? []
-        };
-
-        private ChangeRequestUpdateLine MapToUpdateLineEntity(ChangeRequestUpdateLineDto updateLine) => new()
-        {
-            Id = updateLine.Id,
-            RequestState = updateLine.RequestState,
-            Amount = updateLine.ProposedAmount,
-            Date = updateLine.ProposedDate,
-            Sequence = updateLine.ProposedSequence,
-            Reference = updateLine.ProposedReference,
-            CreatedOn = updateLine.CreatedOn,
-            UpdatedOn = updateLine.UpdatedOn,
-            Transaction = transactionMapper.MapDtoToTransaction(updateLine.TransactionToUpdate),
-            TransactionCategories = updateLine.ProposedCategories?.Select(transactionCategoryMapper.MapDtoToCategory).ToList() ?? [],
-            TransactionProperties = updateLine.ProposedProperties?.Select(transactionPropertyMapper.MapDtoToProperty).ToList() ?? []
         };
 
         private ChangeRequestDeleteLine MapToDeleteLineEntity(ChangeRequestDeleteLineDto deleteLine) => new()

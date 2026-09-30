@@ -1,19 +1,28 @@
->>V0
-1) fix transaction crud ops
->datetime not persisted correctly
->sequence not adjusted on 
+===== V0 =====
+
+>TEST PROCESS
+1) input create DONE
+2) input same create (make sure entries are all ignored)
+3) input update file
+4) input delete file
+5) input mixed file
+6) input mixed file over multiple days
+
+>things to look out for whilst testing 
+1) datetime not persisted correctly DONE
+2) sequence not adjusted on deny DONE
+3) sequence not adjusted on transaction delete DONE
 
 
-
-2) need to test update entries (create new data file)
-=> changes off the back of this 
-3) need to test delete entries (create new data file)
-=> changes off the back of this 
-4) manually assign category on the changelog screen
+>final features
+1) document  upload for trannscation (evidence flow)
+2) per line transaction total breakdown
+3) final breakdown amount
 
 
->>V1
-1)) invoice generation
-2) events
-3) changelog missing prop/category flow 
-4) Unit testing all services thus far + general testing
+==== V1.1 =====
+Pagination for transaction
+Category, property filtering for transactions
+Versioning (should be possible now we are doing only creates and deletes, can add a 'added version' and 'deleteversion' on an entity and attach to the changelog and transaction table
+
+==== V1.2 ======

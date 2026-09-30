@@ -1,0 +1,26 @@
+
+
+Transactions
+1) Transactions should be identified by DATE and SEQUENCE. (maybe this should be composite PK?)
+
+>MANUAL TEST PROCESS (to be converted into unit test)
+1) input create
+2) input same create (make sure entries are all ignored)
+3) input update file
+4) input delete file
+5) input mixed file
+6) input mixed file over multiple days
+
+ChangeLog
+>Change Log Generation
+1) Create if TransactionIdentifier (DATE SEQUENCE PAIR) does not exist 
+2) Update occurs TransactionIdentifier exists and any of data fields (other than TransactionIdentifier) is different (time of writing: only Reference and Amount)
+3) Delete occurs if TransactionIdentifier exists in persisted but not in file input 
+4) Ignore happens if the TransactionIdentifier exists but has no new data
+
+>Approve Change Log
+1) Create creates 
+2) Update updates
+3) Delete deletes
+4) Sequence is dennying
+

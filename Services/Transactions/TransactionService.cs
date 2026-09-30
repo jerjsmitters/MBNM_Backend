@@ -15,7 +15,7 @@ using System.Data;
 
 namespace Services.Transactions
 {
-    public class TransactionService(EfDbContext dbContext, IChangeRequestService proposedTransactionChangeService, ITransactionMapper mappingService) : ITransactionService
+    public class TransactionService(EfDbContext dbContext, ITransactionMapper mappingService) : ITransactionService
     {
 
         public async Task<TransactionDto?> Get(int id)
@@ -40,6 +40,7 @@ namespace Services.Transactions
                 .Transactions
                 .Include(t => t.AssignedCategories)
                 .Include(t => t.AssignedProperties)
+                .Where(t => !t.IsDeleted)
                 .ToListAsync();
 
             return entities
@@ -83,6 +84,8 @@ namespace Services.Transactions
 
         public async Task Delete(int id)
         {
+            await using var efDbTransaction = await dbContext.Database.BeginTransactionAsync();
+
             var transaction = await dbContext
                 .Transactions
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -93,6 +96,15 @@ namespace Services.Transactions
             }
 
             transaction.IsDeleted = true;
+            await dbContext.SaveChangesAsync();
+
+            DateOnly 
+                startDate = transaction.Date, 
+                endDate = transaction.Date;
+
+            await AdjustSequenceOfTransactionsByDateInternal(startDate, endDate);
+
+            await efDbTransaction.CommitAsync();
         }
 
         public async Task<TransactionDto> Update(TransactionDto update)
@@ -114,6 +126,11 @@ namespace Services.Transactions
             return mappingService.MapTransactionToDto(entity);
         }
 
+        public Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate)
+        {
+            return AdjustSequenceOfTransactionsByDateInternal(startDate, endDate);
+        }
+
         private Transaction AttachManyToManyEntities(Transaction transaction)
         {
             var categoryIds = transaction.AssignedCategories.Select(x => x.Id);
@@ -126,6 +143,31 @@ namespace Services.Transactions
             transaction.AssignedProperties = properties;
 
             return transaction;
+        }
+        
+        private async Task AdjustSequenceOfTransactionsByDateInternal(DateOnly startDate, DateOnly endDate)
+        {
+            var transactionsForDateRange = await dbContext
+                .Transactions
+                .Where(x => x.Date >= startDate && x.Date <= endDate)
+                .ToListAsync();
+
+            var sequence = 0;
+
+            DateOnly? dateForSequence = null;
+            foreach (var transactionLine in transactionsForDateRange)
+            {
+                var transactionLineDate = transactionLine.Date;
+
+                if (!dateForSequence.HasValue || !dateForSequence.Equals(transactionLineDate))
+                {
+                    dateForSequence = transactionLineDate;
+                    sequence = 0;
+                }
+
+                transactionLine.Sequence = sequence; ;
+                sequence++;
+            }
         }
     }
 }

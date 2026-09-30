@@ -14,5 +14,8 @@ namespace Common.Dto.Transactions
         public string Reference { get; init; }
         public List<TransactionCategoryDto> Categories { get; init; }
         public List<TransactionPropertyDto> Properties { get; init; }
+
+        public TransactionIdentifierDto GetIdentifier() => new(Date, Sequence, Amount, Reference);
+
     }
 }

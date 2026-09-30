@@ -12,7 +12,6 @@ namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities
             base.Configure(builder);
 
             builder.HasMany(b => b.CreateLines).WithOne(l => l.ChangeRequest);
-            builder.HasMany(b => b.UpdateLines).WithOne(l => l.ChangeRequest);
             builder.HasMany(b => b.DeleteLines).WithOne(l => l.ChangeRequest);
         }
     }

@@ -18,5 +18,6 @@ namespace Services.Interfaces.Transactions
         Task<TransactionDto> Update(TransactionDto update);
 
         Task Delete(int id);
+        Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate);
     }
 }

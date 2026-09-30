@@ -4,6 +4,7 @@
     <Project Path="DataAccess.Models/DataAccess.Models.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
+    <File Path="UnitTestSpec.txt" />
     <File Path="V0_TODO.txt" />
   </Folder>
   <Project Path="API/API.csproj" Id="00e0b373-39c3-4452-8d41-fc27fb24b5e3" />

@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace DataAccess.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -90,7 +90,7 @@ namespace DataAccess.EF.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Sequence = table.Column<int>(type: "int", nullable: false),
                     Reference = table.Column<string>(type: "longtext", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -115,7 +115,7 @@ namespace DataAccess.EF.Migrations
                     RequestState = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     ChangeRequestId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Sequence = table.Column<int>(type: "int", nullable: false),
                     Reference = table.Column<string>(type: "longtext", nullable: false)
                 },
@@ -213,41 +213,6 @@ namespace DataAccess.EF.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ChangeRequestUpdateLines",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    TransactionId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    RequestState = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    ChangeRequestId = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    Sequence = table.Column<int>(type: "int", nullable: false),
-                    Reference = table.Column<string>(type: "longtext", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChangeRequestUpdateLines", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLines_ChangeRequests_ChangeRequestId",
-                        column: x => x.ChangeRequestId,
-                        principalTable: "ChangeRequests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLines_Transactions_TransactionId",
-                        column: x => x.TransactionId,
-                        principalTable: "Transactions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "TransactionEvidence",
                 columns: table => new
                 {
@@ -282,7 +247,7 @@ namespace DataAccess.EF.Migrations
                 {
                     table.PrimaryKey("PK_TransactionTransactionCategory", x => new { x.AssignedCategoriesId, x.TransactionId });
                     table.ForeignKey(
-                        name: "FK_TransactionTransactionCategory_TransactionCategories_Assignn~",
+                        name: "FK_TransactionTransactionCategory_TransactionCategories_Assigne~",
                         column: x => x.AssignedCategoriesId,
                         principalTable: "TransactionCategories",
                         principalColumn: "Id",
@@ -371,56 +336,6 @@ namespace DataAccess.EF.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "ChangeRequestUpdateLineTransactionCategory",
-                columns: table => new
-                {
-                    ChangeRequestUpdateLineId = table.Column<int>(type: "int", nullable: false),
-                    TransactionCategoriesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChangeRequestUpdateLineTransactionCategory", x => new { x.ChangeRequestUpdateLineId, x.TransactionCategoriesId });
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLineTransactionCategory_ChangeRequestUpda~",
-                        column: x => x.ChangeRequestUpdateLineId,
-                        principalTable: "ChangeRequestUpdateLines",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLineTransactionCategory_TransactionCatego~",
-                        column: x => x.TransactionCategoriesId,
-                        principalTable: "TransactionCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ChangeRequestUpdateLineTransactionProperty",
-                columns: table => new
-                {
-                    ChangeRequestUpdateLineId = table.Column<int>(type: "int", nullable: false),
-                    TransactionPropertiesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChangeRequestUpdateLineTransactionProperty", x => new { x.ChangeRequestUpdateLineId, x.TransactionPropertiesId });
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLineTransactionProperty_ChangeRequestUpda~",
-                        column: x => x.ChangeRequestUpdateLineId,
-                        principalTable: "ChangeRequestUpdateLines",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChangeRequestUpdateLineTransactionProperty_TransactionProper~",
-                        column: x => x.TransactionPropertiesId,
-                        principalTable: "TransactionProperties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
             migrationBuilder.CreateIndex(
                 name: "IX_ChangeRequestCreateLines_ChangeRequestId",
                 table: "ChangeRequestCreateLines",
@@ -445,26 +360,6 @@ namespace DataAccess.EF.Migrations
                 name: "IX_ChangeRequestDeleteLines_TransactionId",
                 table: "ChangeRequestDeleteLines",
                 column: "TransactionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChangeRequestUpdateLines_ChangeRequestId",
-                table: "ChangeRequestUpdateLines",
-                column: "ChangeRequestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChangeRequestUpdateLines_TransactionId",
-                table: "ChangeRequestUpdateLines",
-                column: "TransactionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChangeRequestUpdateLineTransactionCategory_TransactionCatego~",
-                table: "ChangeRequestUpdateLineTransactionCategory",
-                column: "TransactionCategoriesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChangeRequestUpdateLineTransactionProperty_TransactionProper~",
-                table: "ChangeRequestUpdateLineTransactionProperty",
-                column: "TransactionPropertiesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MatchingCriteriaTransactionCategory_TransactionCategoriesId",
@@ -505,12 +400,6 @@ namespace DataAccess.EF.Migrations
                 name: "ChangeRequestDeleteLines");
 
             migrationBuilder.DropTable(
-                name: "ChangeRequestUpdateLineTransactionCategory");
-
-            migrationBuilder.DropTable(
-                name: "ChangeRequestUpdateLineTransactionProperty");
-
-            migrationBuilder.DropTable(
                 name: "MatchingCriteriaTransactionCategory");
 
             migrationBuilder.DropTable(
@@ -529,9 +418,6 @@ namespace DataAccess.EF.Migrations
                 name: "ChangeRequestCreateLines");
 
             migrationBuilder.DropTable(
-                name: "ChangeRequestUpdateLines");
-
-            migrationBuilder.DropTable(
                 name: "MatchingCriteria");
 
             migrationBuilder.DropTable(
@@ -541,10 +427,10 @@ namespace DataAccess.EF.Migrations
                 name: "TransactionProperties");
 
             migrationBuilder.DropTable(
-                name: "ChangeRequests");
+                name: "Transactions");
 
             migrationBuilder.DropTable(
-                name: "Transactions");
+                name: "ChangeRequests");
         }
     }
 }

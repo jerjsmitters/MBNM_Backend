@@ -49,10 +49,20 @@ namespace Services.Input
             InputTransactionDto mappedLine;
 
             var sequence = 0;
+
+            DateOnly? dateForSequence = null;
             foreach (var transactionLine in transactionLines)
             {
+                var transactionLineDate = DateOnly.ParseExact(transactionLine[DATE_CSV_INDEX], DATETIME_FORMAT);
+
+                if (!dateForSequence.HasValue || !dateForSequence.Equals(transactionLineDate))
+                {
+                    dateForSequence = transactionLineDate;
+                    sequence = 0;
+                }
+
                 mappedLine = new(
-                     DateOnly.ParseExact(transactionLine[DATE_CSV_INDEX], DATETIME_FORMAT),
+                     transactionLineDate,
                      sequence,
                      decimal.Parse(transactionLine[AMOUNT_CSV_INDEX]),
                      transactionLine[REFERENCE_CSV_INDEX]
