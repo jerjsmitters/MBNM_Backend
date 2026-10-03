@@ -35,7 +35,6 @@ namespace API.Controllers
         public async Task<ActionResult<List<ChangeRequestCommitResultDto>>> ApplyChangeRequest(CommitChangeRequestDto commitChangeRequestDto)
         {
             var nothingToDo = ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.CreateLines) 
-                && ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.UpdateLines) 
                 && ListHelpers.IsNullOrEmpty(commitChangeRequestDto?.DeleteLines);
 
             if (nothingToDo) 

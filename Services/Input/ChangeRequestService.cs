@@ -12,12 +12,14 @@ using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.ChangeRequestEntities.Line;
 using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Services.Interfaces.Common;
 using Services.Interfaces.Input;
 using Services.Interfaces.Transactions;
 using Services.Transactions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -80,6 +82,12 @@ namespace Services.Input
             List<TransactionDto> persistedTransactionsForDateRange = GetTransactionsForDateRange(dateRange.Item1, dateRange.Item2);
 
             var proposedTransactionChangeLog = GenerateChangeRequest(dataInput.Transactions, persistedTransactionsForDateRange);
+
+            if (proposedTransactionChangeLog.NothingToDo)
+            {
+                return proposedTransactionChangeLog;
+            }
+
             proposedTransactionChangeLog = await SaveChangeRequest(proposedTransactionChangeLog);
 
             return proposedTransactionChangeLog;
@@ -131,7 +139,7 @@ namespace Services.Input
             //delete requests 
             foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
             {
-                if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, deleteRequest))
+                if (NeedToIgnoreLine(applyChangeRequestInfo.DeleteLines, deleteRequest))
                 {
                     deleteRequest.RequestState = ChangeRequestState.DENIED;
                     continue;
@@ -169,57 +177,84 @@ namespace Services.Input
 
         // ========================== PRIVATE FNS ===========================//
 
+        ///FOR ONE DAY ONLY
         private ChangeRequestDto GenerateChangeRequest(List<InputTransactionDto> inputTransactions, List<TransactionDto> persistedTransactions)
         {
-
+            //cache properties and categories for later
             var allInputReferences = inputTransactions.Select(it => it.Reference);
-
             var propertiesMap = matchingCriteriaService.GetMatchingPropertiesMapByReferences(allInputReferences);
             var categoriesMap = matchingCriteriaService.GetMatchingCategoriesMapByReferences(allInputReferences);
 
+            List<ChangeRequestCreateLineDto> toBeAdded = [];
+            List<ChangeRequestDeleteLineDto> toBeRemoved = [];
+            var sequence = 0;
 
-            //1) prepare dadta
-            var needToBeAddedInputTransactions = inputTransactions.Where(it => !persistedTransactions.Any(pt => it.GetIdentifier().Equals(pt.GetIdentifier())));
-            var needToBeDeletedPersistedTransactions = persistedTransactions.Where(pt => !inputTransactions.Any(a => pt.GetIdentifier().Equals(a.GetIdentifier())));
-            
+            //3) 
 
+            ChangeRequestCreateLineDto addLine;
+            foreach (var transaction in inputTransactions) 
+            {
 
-            var needToBeAdded = needToBeAddedInputTransactions
-                .Select(
-                    t => new ChangeRequestCreateLineDto 
+                //1) input transactions that can't possibly be in persisted transactions (and thus no equality check or delete operation required)
+                var needToAdd = inputTransactions.IndexOf(transaction) + 1 > persistedTransactions.Count;
+                if (needToAdd)
+                {
+                    addLine = new ChangeRequestCreateLineDto
                     {
-                        ProposedAmount = t.Amount,
-                        ProposedDate = t.Date,
-                        ProposedReference = t.Reference,
-                        ProposedSequence = t.Sequence,
+                        ProposedAmount = transaction.Amount,
+                        ProposedDate = transaction.Date,
+                        ProposedReference = transaction.Reference,
+                        ProposedSequence = sequence,
                         RequestState = ChangeRequestState.PENDING,
-                        ProposedCategories = categoriesMap[t.Reference],
-                        ProposedProperties = propertiesMap[t.Reference]
-                    }
-                )
-                .ToList();
+                        ProposedCategories = categoriesMap[transaction.Reference],
+                        ProposedProperties = propertiesMap[transaction.Reference]
+                    };
 
+                    toBeAdded.Add(addLine);
+                    sequence++;
+                    continue; 
+                }
 
+                //2) input transactions that could be the same or different to persisted and thus need equality checking plus potential delete operation
+                var matchingPersistedEntity = persistedTransactions[sequence];
 
+                var entitiesMatch = matchingPersistedEntity.GetIdentifier().Equals(transaction.GetIdentifier());
+                
+                if (!entitiesMatch)
+                {
+                    addLine = new ChangeRequestCreateLineDto
+                    {
+                        ProposedAmount = transaction.Amount,
+                        ProposedDate = transaction.Date,
+                        ProposedReference = transaction.Reference,
+                        ProposedSequence = sequence,
+                        RequestState = ChangeRequestState.PENDING,
+                        ProposedCategories = categoriesMap[transaction.Reference],
+                        ProposedProperties = propertiesMap[transaction.Reference]
+                    };
 
-            //2) Delete operations
+                    toBeAdded.Add(addLine);
 
-            //3) persisted but values changed
-            var needToDelete = needToBeDeletedPersistedTransactions
-                .Select(
-                     t => new ChangeRequestDeleteLineDto
-                     {
-                         TransactionToDelete = t,
-                         RequestState = ChangeRequestState.PENDING
-                     }
-                )
-                .ToList();
+                    var deleteLine = new ChangeRequestDeleteLineDto
+                    {
+                        TransactionToDelete = matchingPersistedEntity,
+                        RequestState = ChangeRequestState.PENDING
+                    };
+
+                    toBeRemoved.Add(deleteLine);
+                }
+
+                sequence++;              
+            }
+
+            //3) persistedd transactions that can't possibly be in inputTransactions, and thus don't need equality check or create operation
+            toBeRemoved = RemoveSurplusPersistedIfApplicable(sequence, persistedTransactions, toBeRemoved);
 
             return new ChangeRequestDto
             {
                 CreatedOn = DateTime.UtcNow,
-                CreateLines = needToBeAdded,
-                DeleteLines = needToDelete
+                CreateLines = toBeAdded,
+                DeleteLines = toBeRemoved
             };
         }
 
@@ -244,20 +279,53 @@ namespace Services.Input
 
         private async Task<ChangeRequest> RecalcPersistedTransactionSequences(ChangeRequest changeRequest)
         {
-            var createLinesEarliestDate = changeRequest.CreateLines.Min(x => x.Date);
-            var createLinesLatestDate = changeRequest.CreateLines.Max(x => x.Date);
+            var createLinesEarliestDate = changeRequest.CreateLines.Any() 
+                ? (DateOnly?)changeRequest.CreateLines.Min(x => x.Date) 
+                : null;
 
-            var deleteLineEarliestDate = changeRequest.DeleteLines.Min(x => x.Transaction?.Date);
-            var deleteLineLatestDate = changeRequest.DeleteLines.Max(x => x.Transaction?.Date);
+            var createLinesLatestDate = changeRequest.CreateLines.Any()
+                ? (DateOnly?)changeRequest.CreateLines.Max(x => x.Date)
+                : null;
+
+            var deleteLineEarliestDate = changeRequest.DeleteLines.Any()
+                ? (DateOnly?)changeRequest.DeleteLines.Min(x => x.Transaction.Date)
+                : null;
+
+            var deleteLineLatestDate = changeRequest.DeleteLines.Any()
+                ? (DateOnly?)changeRequest.DeleteLines.Max(x => x.Transaction.Date)
+                : null;
 
             var earliestDate = new List<DateOnly?> { createLinesEarliestDate, deleteLineEarliestDate }.Where(x => x != null).Min();
             var latestDate = new List<DateOnly?> { createLinesLatestDate, deleteLineLatestDate }.Where(x => x != null).Max();
 
             await transactionService.AdjustSequenceOfTransactionsByDate(earliestDate.Value, latestDate.Value);
+            await dbContext.SaveChangesAsync();
 
             return changeRequest;
         }
 
+        private List<ChangeRequestDeleteLineDto> RemoveSurplusPersistedIfApplicable(int finalSequence, List<TransactionDto> persistedTransactions, List<ChangeRequestDeleteLineDto> generatedDeleteLines)
+        {
+            var oneBasedFinalSequence = finalSequence + 1;
+            if (oneBasedFinalSequence >= persistedTransactions.Count)
+            {
+                return generatedDeleteLines;
+            }
+
+            var toDelete = persistedTransactions.Skip(finalSequence).ToList();
+            toDelete.ForEach(td =>
+            {
+                var deleteLine = new ChangeRequestDeleteLineDto
+                {
+                    TransactionToDelete = td,
+                    RequestState = ChangeRequestState.PENDING
+                };
+
+                generatedDeleteLines.Add(deleteLine);
+            });
+
+            return generatedDeleteLines;
+        }
 
         // =========== DATA ACCESS  ===============//
         private Task<ChangeRequest?> GetInternal(int id)
@@ -356,7 +424,8 @@ namespace Services.Input
 
         private static bool NeedToIgnoreLine(List<ApplyChangeRequestLineDto> applyChangeRequestLines, ChangeRequestLine changeRequestLine)
         {
-            return applyChangeRequestLines.Any(cl => cl.LineId == changeRequestLine.Id && cl.DesiredState == ChangeRequestState.DENIED);
+            var matchingLine = applyChangeRequestLines.FirstOrDefault(x => x.LineId == changeRequestLine.Id) ?? throw new Exception("Cannot find line");
+            return matchingLine.DesiredState == ChangeRequestState.DENIED;
 
         }
 

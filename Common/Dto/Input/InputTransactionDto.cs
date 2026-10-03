@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Common.Dto.Input
 {
-    public record InputTransactionDto(DateOnly Date, int Sequence, decimal Amount, string Reference)
+    public record InputTransactionDto(DateOnly Date, int InputSequence, decimal Amount, string Reference)
     {
-        public TransactionIdentifierDto GetIdentifier() => new(Date, Sequence, Amount, Reference);
+        public TransactionIdentifierDto GetIdentifier() => new(Date, InputSequence, Amount, Reference);
     }
 }

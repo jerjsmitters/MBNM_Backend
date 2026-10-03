@@ -103,6 +103,7 @@ namespace Services.Transactions
                 endDate = transaction.Date;
 
             await AdjustSequenceOfTransactionsByDateInternal(startDate, endDate);
+            await dbContext.SaveChangesAsync();
 
             await efDbTransaction.CommitAsync();
         }

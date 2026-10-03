@@ -13,6 +13,7 @@ namespace Services.Input
         private const int DATE_CSV_INDEX = 0;
         private const int REFERENCE_CSV_INDEX = 1;
         private const int AMOUNT_CSV_INDEX = 2;
+        private const int NUMBERS_OF_FIELDS_TO_WORK = 2;
         private const string DATETIME_FORMAT = "yyyy-MM-dd";
 
         public InputTransactionsDto ParseInputData(string data)
@@ -24,7 +25,7 @@ namespace Services.Input
 
             var transactionLines = ParseCsvIntoTransactionLines(data);
 
-            if (transactionLines.Count == 0)
+            if (transactionLines.Count == 0 || transactionLines.Any(x => x.Length < NUMBERS_OF_FIELDS_TO_WORK))
             {
                 throw new ArgumentException(nameof(transactionLines), PARSING_ERROR_MSG);
             }
@@ -39,7 +40,11 @@ namespace Services.Input
             return csvContent
                 .Replace("\"", string.Empty)
                 .Split("\r\n")
-                .Select(csv => csv.Split(","))
+                .Select(
+                    csv => csv
+                        .Split(",")
+                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                        .ToArray())
                 .ToList();
         }
 
@@ -48,28 +53,22 @@ namespace Services.Input
             InputTransactionsDto mappedLines = new(DateTime.UtcNow, []);
             InputTransactionDto mappedLine;
 
-            var sequence = 0;
+            var inputSequence = 0;
 
             DateOnly? dateForSequence = null;
             foreach (var transactionLine in transactionLines)
             {
                 var transactionLineDate = DateOnly.ParseExact(transactionLine[DATE_CSV_INDEX], DATETIME_FORMAT);
 
-                if (!dateForSequence.HasValue || !dateForSequence.Equals(transactionLineDate))
-                {
-                    dateForSequence = transactionLineDate;
-                    sequence = 0;
-                }
-
                 mappedLine = new(
                      transactionLineDate,
-                     sequence,
+                     inputSequence,
                      decimal.Parse(transactionLine[AMOUNT_CSV_INDEX]),
                      transactionLine[REFERENCE_CSV_INDEX]
                 );
 
                 mappedLines.Transactions.Add(mappedLine);
-                sequence++;
+                inputSequence++;
             }
 
             return mappedLines;

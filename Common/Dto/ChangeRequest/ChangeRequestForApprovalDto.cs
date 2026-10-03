@@ -11,18 +11,16 @@ namespace Common.Dto.ChangeRequest
         public ChangeRequestDto()
         {
             CreateLines = [];
-            UpdateLines = [];
             DeleteLines = [];
         }
 
         public List<ChangeRequestCreateLineDto> CreateLines { get; set; }
-        public List<ChangeRequestUpdateLineDto> UpdateLines { get; set; }
         public List<ChangeRequestDeleteLineDto> DeleteLines { get; set; }
 
-        public bool IsCommitted => CreateLinesCommitted && UpdateLinesCommitted && DeleteLinesCommitted;
+        public bool IsCommitted => CreateLinesCommitted && DeleteLinesCommitted;
+        public bool NothingToDo => !CreateLines.Any() && !DeleteLines.Any();
 
         private bool CreateLinesCommitted => !CreateLines.Any() || CreateLines.All(x => x.RequestState != Enums.ChangeRequestState.PENDING);
-        private bool UpdateLinesCommitted => !UpdateLines.Any() || UpdateLines.All(x => x.RequestState != Enums.ChangeRequestState.PENDING);
         private bool DeleteLinesCommitted => !DeleteLines.Any() || DeleteLines.All(x => x.RequestState != Enums.ChangeRequestState.PENDING);
     }
 }
