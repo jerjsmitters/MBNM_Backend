@@ -17,13 +17,10 @@ namespace Services.Transactions
 {
     public class TransactionService(EfDbContext dbContext, ITransactionMapper mappingService) : ITransactionService
     {
-
         public async Task<TransactionDto?> Get(int id)
         {
             var transaction = await dbContext
                 .Transactions
-                .Include(t => t.AssignedCategories)
-                .Include(t => t.AssignedProperties)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (transaction == null)
@@ -36,12 +33,7 @@ namespace Services.Transactions
 
         public async Task<List<TransactionDto>> GetAll()
         {
-            var entities = await dbContext
-                .Transactions
-                .Include(t => t.AssignedCategories)
-                .Include(t => t.AssignedProperties)
-                .Where(t => !t.IsDeleted)
-                .ToListAsync();
+            var entities = await GetNonDeletedSequenced().ToListAsync();
 
             return entities
                 .Select(mappingService.MapTransactionToDto)
@@ -51,10 +43,7 @@ namespace Services.Transactions
 
         public async Task<List<TransactionDto>> GetAllFiltered(EntityFilter filter)
         {
-            IQueryable<Transaction> query = dbContext
-                .Transactions
-                .Include(t => t.AssignedCategories)
-                .Include(t => t.AssignedProperties);
+            var query = GetNonDeletedSequenced();
 
             if (filter.StartDate.HasValue)
             {
@@ -112,8 +101,6 @@ namespace Services.Transactions
         {
             var entity = await dbContext
                 .Transactions
-                .Include(x => x.AssignedCategories)
-                .Include(x => x.AssignedProperties)
                 .FirstOrDefaultAsync(x => x.Id == update.Id) 
                 ?? throw new InvalidOperationException("doesnt exist");
 
@@ -151,6 +138,7 @@ namespace Services.Transactions
             var transactionsForDateRange = await dbContext
                 .Transactions
                 .Where(x => x.Date >= startDate && x.Date <= endDate)
+                .Where(x => !x.IsDeleted)
                 .ToListAsync();
 
             var sequence = 0;
@@ -170,5 +158,12 @@ namespace Services.Transactions
                 sequence++;
             }
         }
+
+        private IQueryable<Transaction> GetNonDeletedSequenced() => 
+            dbContext
+                .Transactions
+                .Where(t => !t.IsDeleted)
+                .OrderBy(t => t.Date)
+                .ThenBy(t => t.Sequence);
     }
 }

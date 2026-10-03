@@ -12,7 +12,11 @@ namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities.Line
             base.Configure(builder);
 
             builder.HasMany(b => b.TransactionCategories).WithMany();
+            builder.Navigation(b => b.TransactionCategories).AutoInclude();
+
             builder.HasMany(b => b.TransactionProperties).WithMany();
+            builder.Navigation(b => b.TransactionProperties).AutoInclude();
+
         }
     }
 }

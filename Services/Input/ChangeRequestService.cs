@@ -55,9 +55,6 @@ namespace Services.Input
 
             var changeRequest = await dbContext
                 .ChangeRequests
-                .Include(cr => cr.CreateLines)
-                .Include(cr => cr.DeleteLines)
-                .ThenInclude(cr => cr.Transaction)
                 .ToListAsync();
 
             if (!changeRequest.Any())
@@ -99,7 +96,6 @@ namespace Services.Input
             var results = new List<ChangeRequestCommitResultDto>();
             ChangeRequestCommitResultDto result;
 
-            await using var efDbTransaction = await dbContext.Database.BeginTransactionAsync();
 
             var changeRequest = await GetInternal(applyChangeRequestInfo.ChangeRequestId)
                 ?? throw new InvalidOperationException($"Change Request with Id = {applyChangeRequestInfo.ChangeRequestId} doesn't exist.");
@@ -158,14 +154,7 @@ namespace Services.Input
                 results.Add(result);
             }
 
-
             await dbContext.SaveChangesAsync();
-
-            //adjust sequences
-            changeRequest = await RecalcPersistedTransactionSequences(changeRequest);
-            await dbContext.SaveChangesAsync();
-
-            await efDbTransaction.CommitAsync();
 
             return results;
         }
@@ -332,12 +321,6 @@ namespace Services.Input
         {
             return dbContext
                 .ChangeRequests
-                .Include(cr => cr.CreateLines)
-                .ThenInclude(cl => cl.TransactionProperties)
-                .Include(cr => cr.CreateLines)
-                .ThenInclude(cl => cl.TransactionCategories)
-                .Include(cr => cr.DeleteLines)
-                .ThenInclude(dl => dl.Transaction)
                 .FirstOrDefaultAsync(cr => cr.Id == id);
 
         }
@@ -346,8 +329,8 @@ namespace Services.Input
         {
             return dbContext
                 .Transactions
-                .Where(t => !t.IsDeleted)
                 .Where(t => t.Date <= startDate && t.Date >= endDate)
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.Sequence)
                 .AsNoTracking()

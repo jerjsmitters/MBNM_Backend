@@ -13,6 +13,8 @@ namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities.Line
 
             // Delete line references the original Transaction
             builder.HasOne(b => b.Transaction).WithMany();
+           //builder.Navigation(b => b.Transaction).AutoInclude();
+
         }
     }
 }

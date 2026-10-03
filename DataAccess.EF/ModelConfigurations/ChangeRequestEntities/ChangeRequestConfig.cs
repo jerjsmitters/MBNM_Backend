@@ -12,7 +12,10 @@ namespace DataAccess.EF.ModelConfigurations.ChangeRequestEntities
             base.Configure(builder);
 
             builder.HasMany(b => b.CreateLines).WithOne(l => l.ChangeRequest);
+            builder.Navigation(b => b.CreateLines).AutoInclude();
+
             builder.HasMany(b => b.DeleteLines).WithOne(l => l.ChangeRequest);
+            builder.Navigation(b => b.DeleteLines).AutoInclude();
         }
     }
 }

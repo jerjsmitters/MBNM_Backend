@@ -39,7 +39,11 @@ namespace DataAccess.EF.ModelConfigurations.Base
               .IsRequired();
 
             builder.HasMany(x => x.TransactionProperties);
+            //builder.Navigation(b => b.TransactionProperties).AutoInclude();
+
             builder.HasMany(x => x.TransactionCategories);
+            //builder.Navigation(b => b.TransactionCategories).AutoInclude();
+
 
         }
     }

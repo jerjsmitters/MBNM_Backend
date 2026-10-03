@@ -14,6 +14,8 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
             builder.Property(b => b.FileLocation).IsRequired();
 
             builder.HasOne(b => b.Transaction).WithMany(t => t.Evidence);
+            //builder.Navigation(b => b.Transaction).AutoInclude();
+
         }
     }
 }

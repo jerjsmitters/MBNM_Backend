@@ -29,10 +29,15 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
 
             // Many-to-many to categories and properties (no inverse navigation on category/property for transactions)
             builder.HasMany(b => b.AssignedCategories).WithMany();
+            builder.Navigation(b => b.AssignedCategories).AutoInclude();
             builder.HasMany(b => b.AssignedProperties).WithMany();
+            builder.Navigation(b => b.AssignedProperties).AutoInclude();
+
 
             // Evidence one-to-many
             builder.HasMany(b => b.Evidence).WithOne(e => e.Transaction);
+            builder.Navigation(b => b.Evidence).AutoInclude();
+
         }
     }
 }

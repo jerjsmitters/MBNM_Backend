@@ -14,6 +14,8 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
 
             // Many-to-many with MatchingCriteria
             builder.HasMany(b => b.CriteriaToMatchOn).WithMany(c => c.TransactionCategories);
+            //builder.Navigation(b => b.CriteriaToMatchOn).AutoInclude();
+
         }
     }
 }

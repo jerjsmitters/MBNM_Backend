@@ -12,7 +12,6 @@ namespace DataAccess.EF.ModelConfigurations.Base
         protected void Configure<T>(EntityTypeBuilder<T> builder) where T : EntityBase
         {
             builder.HasKey(b => b.Id);
-            builder.Property(e => e.Id).ValueGeneratedOnAdd();
             builder.Property(b => b.CreatedOn).IsRequired();
             builder.Property(b => b.IsDeleted).IsRequired().HasDefaultValue(false);
         }
