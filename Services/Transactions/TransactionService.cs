@@ -17,6 +17,8 @@ namespace Services.Transactions
 {
     public class TransactionService(EfDbContext dbContext, ITransactionMapper mappingService) : ITransactionService
     {
+        private const int NoAssignedPropertyId = 0;
+        private const int NoAssignedCategoryId = 0;
         public async Task<TransactionDto?> Get(int id)
         {
             var transaction = await dbContext
@@ -60,14 +62,22 @@ namespace Services.Transactions
                 query = query.Where(q => q.Reference.Contains(filter.SearchText));
             }
 
+            query = query.Where(q => 
+                (filter.PropertyIds.Contains(NoAssignedPropertyId) && !q.AssignedProperties.Any())
+                || q.AssignedProperties.Any(x => filter.PropertyIds.Contains(x.Id.Value))
+            );
+
+            query = query.Where(q =>
+                   (filter.CategoryIds.Contains(NoAssignedPropertyId) && !q.AssignedCategories.Any())
+                   || q.AssignedCategories.Any(x => filter.CategoryIds.Contains(x.Id.Value))
+               );
+
             var startPosition = (filter.PageNumber - 1) * filter.PageLength;
-            query = query.Skip(startPosition);
-            query = query.Take(filter.PageLength);
 
-            var entities = await query.ToListAsync();
+            var entities = await query.Skip(startPosition).Take(filter.PageLength).ToListAsync();
+            var dtos = entities.Select(mappingService.MapTransactionToDto).ToList();
 
-            var dtos = query.Select(mappingService.MapTransactionToDto).ToList();
-            var totalCount = await GetNonDeletedSequenced().CountAsync();
+            var totalCount = await query.CountAsync();
 
             return new(dtos, totalCount);
                 
