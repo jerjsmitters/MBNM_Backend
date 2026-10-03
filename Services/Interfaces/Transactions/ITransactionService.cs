@@ -14,7 +14,7 @@ namespace Services.Interfaces.Transactions
 
         Task<List<TransactionDto>> GetAll();
 
-        Task<List<TransactionDto>> GetAllFiltered(EntityFilter entityFilter);
+        Task<TransactionsFilteredResultDto> GetAllFiltered(TransactionEntityFilter entityFilter);
         Task<TransactionDto> Update(TransactionDto update);
 
         Task Delete(int id);

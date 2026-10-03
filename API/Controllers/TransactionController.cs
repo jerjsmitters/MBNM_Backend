@@ -1,9 +1,11 @@
-﻿using Common.Dto.Criteria;
+﻿using Common.Dto.Api;
+using Common.Dto.Criteria;
 using Common.Dto.Transactions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces.Transactions;
 using System.Net.WebSockets;
+using System.Runtime.InteropServices;
 
 namespace API.Controllers
 {
@@ -24,15 +26,33 @@ namespace API.Controllers
             return Ok(property);
         }
 
+        //[HttpGet]
+        //public async Task<ActionResult<List<TransactionDto>>> GetAll()
+        //{
+        //    var results = await transactionService.GetAll();
+        //    return Ok(results);
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<List<TransactionDto>>> GetAll()
+        public async Task<ActionResult<List<TransactionDto>>> GetAllFiltered(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageLength,
+            [FromQuery] [Optional] List<int>? categoryIds,
+            [FromQuery] [Optional] List<int>? propertyIds,
+            [FromQuery] [Optional] string? searchText,
+            [FromQuery] [Optional] DateOnly? startDate,
+            [FromQuery] [Optional] DateOnly? endDate
+            )
         {
-            var results = await transactionService.GetAll();
-            return Ok(results);
+            var transactionFilter = new TransactionEntityFilter(pageNumber, pageLength, categoryIds, propertyIds, searchText, startDate, endDate);
+            var results = await transactionService.GetAllFiltered(transactionFilter);
+            Response.Headers["Total-Results"] = results.TotalResults.ToString();
+
+            return Ok(results.Transactions);
         }
 
         [HttpPut]
-        public async Task<ActionResult<List<TransactionDto>>> GetAll([FromBody] TransactionDto transaction)
+        public async Task<ActionResult<List<TransactionDto>>> Update([FromBody] TransactionDto transaction)
         {
             var results = await transactionService.Update(transaction);
             return Ok(results);

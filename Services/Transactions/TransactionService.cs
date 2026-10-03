@@ -41,7 +41,7 @@ namespace Services.Transactions
 
         }
 
-        public async Task<List<TransactionDto>> GetAllFiltered(EntityFilter filter)
+        public async Task<TransactionsFilteredResultDto> GetAllFiltered(TransactionEntityFilter filter)
         {
             var query = GetNonDeletedSequenced();
 
@@ -60,15 +60,17 @@ namespace Services.Transactions
                 query = query.Where(q => q.Reference.Contains(filter.SearchText));
             }
 
-            var startPosition = filter.PageNumber * filter.PageLength;
+            var startPosition = (filter.PageNumber - 1) * filter.PageLength;
             query = query.Skip(startPosition);
             query = query.Take(filter.PageLength);
 
             var entities = await query.ToListAsync();
 
-            return entities
-                .Select(mappingService.MapTransactionToDto)
-                .ToList();
+            var dtos = query.Select(mappingService.MapTransactionToDto).ToList();
+            var totalCount = await GetNonDeletedSequenced().CountAsync();
+
+            return new(dtos, totalCount);
+                
         }
 
         public async Task Delete(int id)
