@@ -68,7 +68,7 @@ namespace Services.Transactions
             );
 
             query = query.Where(q =>
-                   (filter.CategoryIds.Contains(NoAssignedPropertyId) && !q.AssignedCategories.Any())
+                   (filter.CategoryIds.Contains(NoAssignedCategoryId) && !q.AssignedCategories.Any())
                    || q.AssignedCategories.Any(x => filter.CategoryIds.Contains(x.Id.Value))
                );
 

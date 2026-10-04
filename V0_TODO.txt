@@ -1,4 +1,16 @@
 ===== V0 =====
+1) Extend process to multiple days instead of a single day (mainly sequence focused here) 
+1) document  upload for trannscation (evidence flow)
+3) balance per line 
+4) export functionality 
+
+
+==== V1.1 ====== (TO BE 
+Versioning (should be possible now we are doing only creates and deletes, can add a 'added version' and 'deleteversion' on an entity and attach to the changelog and transaction table
+
+
+
+
 
 >TEST PROCESS
 1) input create DONE
@@ -8,21 +20,4 @@
 5) input mixed file
 6) input mixed file over multiple days
 
->things to look out for whilst testing 
-1) datetime not persisted correctly DONE
-2) sequence not adjusted on deny DONE
-3) sequence not adjusted on transaction delete DONE
 
-
->final features
-1) document  upload for trannscation (evidence flow)
-2) per line transaction total breakdown
-3) final breakdown amount
-
-
-==== V1.1 =====
-Pagination for transaction
-Category, property filtering for transactions
-Versioning (should be possible now we are doing only creates and deletes, can add a 'added version' and 'deleteversion' on an entity and attach to the changelog and transaction table
-
-==== V1.2 ======

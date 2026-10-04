@@ -24,6 +24,7 @@ namespace Services.Setup
 
             //entity services
             services.AddScoped<IChangeRequestService, ChangeRequestService>();
+            services.AddScoped<IGenerateChangeRequestService, GenerateChangeRequestService>();
             services.AddScoped<ITransactionCategoryService, TransactionCategoryService>();
             services.AddScoped<ITransactionEvidenceService, TransactionEvidenceService>();
             services.AddScoped<ITransactionPropertyService, TransactionPropertyService>();
