@@ -135,7 +135,7 @@ namespace Services.Input
             DateOnly date = startDate;
             List <DateOnly> dateRange = [];
 
-            while(date < endDate)
+            while(date <= endDate)
             {
                 dateRange.Add(date);
                 date = date.AddDays(1);

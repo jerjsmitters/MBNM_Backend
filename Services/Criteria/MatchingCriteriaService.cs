@@ -101,6 +101,7 @@ namespace Services.Criteria
         {
             return dbContext
                 .MatchingCriteria
+                .Include(x => x.TransactionCategories)
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionCategories)
                 .Distinct()
@@ -112,6 +113,7 @@ namespace Services.Criteria
         {
             return dbContext
                 .MatchingCriteria
+                .Include(x => x.TransactionProperties)
                 .Where(x => x.MatchingCriteriaMode == MatchingCriteriaMode.CONTAINS && reference.Contains(x.SearchText))
                 .SelectMany(x => x.TransactionProperties)
                 .Distinct()

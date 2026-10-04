@@ -45,6 +45,7 @@ namespace Services.Input
                         .Split(",")
                         .Where(x => !string.IsNullOrWhiteSpace(x))
                         .ToArray())
+                .Where(x => x.Length != 0)
                 .ToList();
         }
 

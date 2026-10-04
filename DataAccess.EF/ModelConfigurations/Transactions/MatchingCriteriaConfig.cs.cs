@@ -18,10 +18,10 @@ namespace DataAccess.EF.ModelConfigurations.Transactions
             builder.Property(b => b.MatchingCriteriaMode).IsRequired();
 
             builder.HasMany(b => b.TransactionProperties).WithMany(p => p.CriteriaToMatchOn);
-            builder.Navigation(b => b.TransactionProperties).AutoInclude();
+            //builder.Navigation(b => b.TransactionProperties).AutoInclude();
 
             builder.HasMany(b => b.TransactionCategories).WithMany(c => c.CriteriaToMatchOn);
-            builder.Navigation(b => b.TransactionCategories).AutoInclude();
+            //builder.Navigation(b => b.TransactionCategories).AutoInclude();
 
         }
     }

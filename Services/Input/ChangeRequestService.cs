@@ -44,6 +44,7 @@ namespace Services.Input
 
             var changeRequest = await dbContext
                 .ChangeRequests
+                .Where(x => !x.IsDeleted)
                 .ToListAsync();
 
             if (!changeRequest.Any())
