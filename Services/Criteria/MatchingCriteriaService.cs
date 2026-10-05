@@ -24,7 +24,7 @@ namespace Services.Criteria
             var entities = GetMatchingTransactionCategoriesByReferenceQuery(reference).AsEnumerable();
 
             return entities
-                .Select(categoryMapper.MapCategoryToDto)
+                .Select(categoryMapper.MapEntityToDto)
                 .ToList();
                 
         }
@@ -47,7 +47,7 @@ namespace Services.Criteria
                 }
 
                 matched = GetMatchingTransactionCategoriesByReferenceQuery(reference)
-                    .Select(categoryMapper.MapCategoryToDto)
+                    .Select(categoryMapper.MapEntityToDto)
                     .ToList();
 
                 returnVal.Add(reference, matched);
@@ -66,7 +66,7 @@ namespace Services.Criteria
             var entities = GetMatchingTransactionPropertiesByReferenceQuery(reference).AsEnumerable();
 
             return entities
-                .Select(propertyMapper.MapPropertyToDto)
+                .Select(propertyMapper.MapEntityToDto)
                 .ToList();
         }
 
@@ -88,7 +88,7 @@ namespace Services.Criteria
                 }
 
                 matched = GetMatchingTransactionPropertiesByReferenceQuery(reference)
-                    .Select(propertyMapper.MapPropertyToDto)
+                    .Select(propertyMapper.MapEntityToDto)
                     .ToList();
 
                 returnVal.Add(reference, matched);

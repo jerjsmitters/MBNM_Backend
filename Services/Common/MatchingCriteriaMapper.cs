@@ -11,40 +11,44 @@ using System.Text;
 
 namespace Services.Common
 {
-    public class MatchingCriteriaMapper : IMatchingCriteriaMapper
+    public class MatchingCriteriaMapper() : IMatchingCriteriaMapper
     {
-        public MatchingCriteria MapDtoToMatchingCriteria(MatchingCriteriaDto matchingCriteria)
+        public MatchingCriteria MapDtoToEntity(MatchingCriteriaDto matchingCriteria)
         {
             return new()
             {
-                CreatedOn = matchingCriteria.CreatedOn,
                 Id = matchingCriteria.Id,
+                CreatedOn = matchingCriteria.CreatedOn,
                 UpdatedOn = matchingCriteria.UpdatedOn,
                 MatchingCriteriaMode = matchingCriteria.MatchingCriteriaMode,
-                SearchText = matchingCriteria.SearchText
+                SearchText = matchingCriteria.SearchText,
+                IsDeleted = matchingCriteria.IsDeleted 
+                //no need to map categories and properties as they own the relationship
             };
         }
 
 
-        public MatchingCriteriaDto MapMatchingCriteriaToDto(MatchingCriteria matchingCriteria)
+        public MatchingCriteriaDto MapEntityToDto(MatchingCriteria matchingCriteria)
         {
             return new()
             {
-                CreatedOn = matchingCriteria.CreatedOn,
                 Id = matchingCriteria.Id,
-                UpdatedOn = matchingCriteria.UpdatedOn,
                 MatchingCriteriaMode = matchingCriteria.MatchingCriteriaMode,
-                SearchText = matchingCriteria.SearchText
+                SearchText = matchingCriteria.SearchText,
+
+                CreatedOn = matchingCriteria.CreatedOn,
+                UpdatedOn = matchingCriteria.UpdatedOn,
+                IsDeleted = matchingCriteria.IsDeleted
+                //no need to map categories and properties as they own the relationship
+
             };
         }
 
-        public MatchingCriteria ProjectDtoToMatchingCriteria(MatchingCriteriaDto incoming, MatchingCriteria entity)
+        public MatchingCriteria ProjectDtoToEntity(MatchingCriteriaDto incoming, MatchingCriteria entity)
         {
             entity.Id = incoming.Id;
             entity.MatchingCriteriaMode = incoming.MatchingCriteriaMode;
             entity.SearchText = incoming.SearchText;
-            entity.CreatedOn = incoming.CreatedOn;
-            entity.UpdatedOn = incoming.UpdatedOn;
 
             return entity;
         }
@@ -58,7 +62,7 @@ namespace Services.Common
             foreach (var existingCriterium in existingCriteria)
             {
                 var existingCriteriaDto = existingCriteriaDtos.FirstOrDefault(exCrit => exCrit.Id.HasValue && exCrit.Id == existingCriterium.Id.Value);
-                ProjectDtoToMatchingCriteria(existingCriteriaDto, existingCriterium);
+                ProjectDtoToEntity(existingCriteriaDto, existingCriterium);
             }
 
 
@@ -67,7 +71,7 @@ namespace Services.Common
             foreach (var newCriteriumDto in newCriteriaDto)
             {
                 entity.CriteriaToMatchOn.Add(
-                    MapDtoToMatchingCriteria(newCriteriumDto)
+                    MapDtoToEntity(newCriteriumDto)
                 );
             }
 

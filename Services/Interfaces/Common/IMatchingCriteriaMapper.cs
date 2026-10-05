@@ -4,17 +4,15 @@ using Common.Dto.Criteria;
 using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.Criteria;
+using Services.Interfaces.Common.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Services.Interfaces.Common
 {
-    public interface IMatchingCriteriaMapper
+    public interface IMatchingCriteriaMapper : IMapper<MatchingCriteria, MatchingCriteriaDto>
     {
-        MatchingCriteria MapDtoToMatchingCriteria(MatchingCriteriaDto matchingCriteria);
-        MatchingCriteriaDto MapMatchingCriteriaToDto(MatchingCriteria matchingCriteria);
-        MatchingCriteria ProjectDtoToMatchingCriteria(MatchingCriteriaDto incoming, MatchingCriteria entity);
         ENT ProjectDtoToEntityWithCriteria<ENT, DTO>(DTO incoming, ENT entity)
             where ENT : EntityWithCriteria
             where DTO : EntityWithCriteriaDto;

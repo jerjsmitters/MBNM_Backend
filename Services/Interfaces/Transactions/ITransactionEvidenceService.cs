@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Common.Dto.Api;
+using Common.Dto.Transactions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Services.Interfaces.Transactions
 {
-    //TBI
     public interface ITransactionEvidenceService
     {
+        Task<TransactionEvidenceDto> Create(CreateEvidenceDto createEvidenceDto);
+        Task Delete(int transactionEvidenceId);
     }
 }

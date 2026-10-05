@@ -21,7 +21,7 @@ namespace Services.Criteria
                 return null;
             }
 
-            return mappingService.MapPropertyToDto(property);
+            return mappingService.MapEntityToDto(property);
         }
 
         public async Task<List<TransactionPropertyDto>> GetAll()
@@ -33,7 +33,7 @@ namespace Services.Criteria
                 .ToListAsync();
 
             return properties
-                .Select(mappingService.MapPropertyToDto)
+                .Select(mappingService.MapEntityToDto)
                 .ToList();
         }
 
@@ -41,12 +41,12 @@ namespace Services.Criteria
         {
             ValidationService.ThrowIfInvalidForCreate(transactionDto);
 
-            var entity = mappingService.MapDtoToProperty(transactionDto);
+            var entity = mappingService.MapDtoToEntity(transactionDto);
             var result = await dbContext.AddAsync(entity);
 
             await dbContext.SaveChangesAsync();
 
-            return mappingService.MapPropertyToDto(result.Entity);
+            return mappingService.MapEntityToDto(result.Entity);
         }
 
 
@@ -61,10 +61,10 @@ namespace Services.Criteria
                 return null;
             }
 
-            var entityWithUpdatedValues = mappingService.ProjectDtoToProperty(updatedPropertyDto, property);
+            var entityWithUpdatedValues = mappingService.ProjectDtoToEntity(updatedPropertyDto, property);
             await dbContext.SaveChangesAsync();
 
-            return mappingService.MapPropertyToDto(entityWithUpdatedValues);
+            return mappingService.MapEntityToDto(entityWithUpdatedValues);
         }
 
         public async Task Delete(int id)

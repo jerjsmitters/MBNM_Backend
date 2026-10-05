@@ -30,7 +30,7 @@ namespace Services.Transactions
                 return null;
             }
 
-            return mappingService.MapTransactionToDto(transaction);
+            return mappingService.MapEntityToDto(transaction);
         }
 
         public async Task<List<TransactionDto>> GetAll()
@@ -38,7 +38,7 @@ namespace Services.Transactions
             var entities = await GetNonDeletedSequenced().ToListAsync();
 
             return entities
-                .Select(mappingService.MapTransactionToDto)
+                .Select(mappingService.MapEntityToDto)
                 .ToList();
 
         }
@@ -75,7 +75,7 @@ namespace Services.Transactions
             var startPosition = (filter.PageNumber - 1) * filter.PageLength;
 
             var entities = await query.Skip(startPosition).Take(filter.PageLength).ToListAsync();
-            var dtos = entities.Select(mappingService.MapTransactionToDto).ToList();
+            var dtos = entities.Select(mappingService.MapEntityToDto).ToList();
 
             var totalCount = await query.CountAsync();
 
@@ -116,14 +116,14 @@ namespace Services.Transactions
                 .FirstOrDefaultAsync(x => x.Id == update.Id) 
                 ?? throw new InvalidOperationException("doesnt exist");
 
-            entity = mappingService.ProjectDtoToTransaction(update, entity);
+            entity = mappingService.ProjectDtoToEntity(update, entity);
 
             //attach many to many
             entity = AttachManyToManyEntities(entity);
 
             await dbContext.SaveChangesAsync();
 
-            return mappingService.MapTransactionToDto(entity);
+            return mappingService.MapEntityToDto(entity);
         }
 
         public Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate)

@@ -9,37 +9,38 @@ namespace Services.Common
 {
     public class TransactionPropertyMapper(IMatchingCriteriaMapper matchingCriteriaMapper) : ITransactionPropertyMapper
     {
-        public TransactionPropertyDto MapPropertyToDto(TransactionProperty property)
+        public TransactionPropertyDto MapEntityToDto(TransactionProperty property)
         {
             return new()
             {
                 Id = property.Id,
                 Description = property.Description,
+                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapEntityToDto).ToList() ?? [],
+
                 CreatedOn = property.CreatedOn,
                 UpdatedOn = property.UpdatedOn,
-                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapMatchingCriteriaToDto).ToList() ?? []
+                IsDeleted = property.IsDeleted
             };
         }
 
-        public TransactionProperty MapDtoToProperty(TransactionPropertyDto property)
+        public TransactionProperty MapDtoToEntity(TransactionPropertyDto property)
         {
             return new TransactionProperty
             {
                 Id = property.Id,
                 Description = property.Description,
+                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapDtoToEntity).ToList() ?? [], //UNTRACKED
+
                 CreatedOn = property.CreatedOn,
                 UpdatedOn = property.UpdatedOn,
-                CriteriaToMatchOn = property.CriteriaToMatchOn?.Select(matchingCriteriaMapper.MapDtoToMatchingCriteria).ToList() ?? []
+                IsDeleted = property.IsDeleted
             };
         }
 
-        public TransactionProperty ProjectDtoToProperty(TransactionPropertyDto incoming, TransactionProperty entity)
+        public TransactionProperty ProjectDtoToEntity(TransactionPropertyDto incoming, TransactionProperty entity)
         {
             entity.Id = incoming.Id;
             entity.Description = incoming.Description;
-            entity.CreatedOn = incoming.CreatedOn;
-            entity.UpdatedOn = incoming.UpdatedOn;
-
             matchingCriteriaMapper.ProjectDtoToEntityWithCriteria(incoming, entity);
 
             return entity;

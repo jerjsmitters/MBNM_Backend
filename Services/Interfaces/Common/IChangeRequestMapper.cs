@@ -2,16 +2,15 @@
 using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.Transactions;
+using Services.Interfaces.Common.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Services.Interfaces.Common
 {
-    public interface IChangeRequestMapper
+    public interface IChangeRequestMapper : IMapper<ChangeRequest, ChangeRequestDto>
     {
-        ChangeRequest MapDtoToChangeRequest(ChangeRequestDto changeRequest);
-        ChangeRequestDto MapChangeRequestToDto(ChangeRequest changeRequest);
-        Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction);
+        Transaction ProjectTransactionChangeRequestLineToEntity(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction);
     }
 }

@@ -39,6 +39,7 @@ namespace Services.Setup
             services.AddScoped<ITransactionCategoryMapper, TransactionCategoryMapper>();
             services.AddScoped<ITransactionPropertyMapper, TransactionPropertyMapper>();
             services.AddScoped<ITransactionMapper, TransactionMapper>();
+            services.AddScoped<ITransactionEvidenceMapper, TransactionEvidenceMapper>();
 
             services.InitialiseEF(connString);
 

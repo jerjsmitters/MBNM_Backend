@@ -36,7 +36,7 @@ namespace Services.Input
                 return null;
             }
 
-            return changeRequestMapper.MapChangeRequestToDto(changeRequest);
+            return changeRequestMapper.MapEntityToDto(changeRequest);
         }
 
         public async Task<List<ChangeRequestDto>> GetAll()
@@ -53,7 +53,7 @@ namespace Services.Input
             }
 
             return changeRequest
-                .Select(changeRequestMapper.MapChangeRequestToDto)
+                .Select(changeRequestMapper.MapEntityToDto)
                 .ToList();
         }
 
@@ -114,7 +114,7 @@ namespace Services.Input
                 {
                     OperationPerformed = ChangeRequestCommitOperation.ADD,
                     TransactionBefore = null,
-                    TransactionAfter = transactionMapper.MapTransactionToDto(transactionToAdd)
+                    TransactionAfter = transactionMapper.MapEntityToDto(transactionToAdd)
                 };
 
                 results.Add(result);
@@ -137,7 +137,7 @@ namespace Services.Input
                 result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.DELETE,
-                    TransactionBefore = transactionMapper.MapTransactionToDto(deleteRequest.Transaction),
+                    TransactionBefore = transactionMapper.MapEntityToDto(deleteRequest.Transaction),
                     TransactionAfter = null
                 };
 
@@ -166,7 +166,7 @@ namespace Services.Input
                 throw new ArgumentException("No change request lines" ,nameof(changeRequest));
             }
 
-            var changeRequestEntity = changeRequestMapper.MapDtoToChangeRequest(changeRequest);
+            var changeRequestEntity = changeRequestMapper.MapDtoToEntity(changeRequest);
 
             //attach the untracked many-to-many properties
             changeRequestEntity = AttachManyToNavigationProperties(changeRequestEntity);
@@ -174,7 +174,7 @@ namespace Services.Input
             var savedRequest = await dbContext.AddAsync(changeRequestEntity);
             await dbContext.SaveChangesAsync();
 
-            return changeRequestMapper.MapChangeRequestToDto(savedRequest.Entity);
+            return changeRequestMapper.MapEntityToDto(savedRequest.Entity);
         }
 
         // =========== DATA ACCESS  ===============//
@@ -195,7 +195,7 @@ namespace Services.Input
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.Sequence)
                 .AsNoTracking()
-                .Select(t => transactionMapper.MapTransactionToDto(t))
+                .Select(t => transactionMapper.MapEntityToDto(t))
                 .ToList();
         }
 
@@ -238,7 +238,7 @@ namespace Services.Input
 
 
         // ============ HELPER FNS ================//
-        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => changeRequestMapper.ProjectChangeRequestLineToTransaction(changeRequestLine, new Transaction());
+        private Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine) => changeRequestMapper.ProjectTransactionChangeRequestLineToEntity(changeRequestLine, new Transaction());
 
         private static bool NothingToProcess(List<ChangeRequestLine> requestLines)
         {

@@ -13,35 +13,39 @@ namespace Services.Common
 {
     public class ChangeRequestMapper(ITransactionMapper transactionMapper, ITransactionPropertyMapper transactionPropertyMapper, ITransactionCategoryMapper transactionCategoryMapper) : IChangeRequestMapper
     {
-        public ChangeRequest MapDtoToChangeRequest(ChangeRequestDto changeRequest)
+        public ChangeRequest MapDtoToEntity(ChangeRequestDto changeRequest)
         {
             var createLines = changeRequest.CreateLines.Select(MapToCreateLineEntity).ToList();
             var deleteLines = changeRequest.DeleteLines.Select(MapToDeleteLineEntity).ToList();
             return new()
             {
                 Id = changeRequest.Id,
+                CreateLines = createLines,
+                DeleteLines = deleteLines,
+
                 CreatedOn = changeRequest.CreatedOn,
                 UpdatedOn = changeRequest.UpdatedOn,
-                CreateLines = createLines,
-                DeleteLines = deleteLines
+                IsDeleted = changeRequest.IsDeleted
             };
         }
 
-        public ChangeRequestDto MapChangeRequestToDto(ChangeRequest changeRequest)
+        public ChangeRequestDto MapEntityToDto(ChangeRequest changeRequest)
         {
             var createLines = changeRequest.CreateLines.Select(MapToCreateLineDto).ToList();
             var deleteLines = changeRequest.DeleteLines.Select(MapToDeleteLineDto).ToList();
             return new()
             {
                 Id = changeRequest.Id,
+                CreateLines = createLines,
+                DeleteLines = deleteLines,
+
                 CreatedOn = changeRequest.CreatedOn,
                 UpdatedOn = changeRequest.UpdatedOn,
-                CreateLines = createLines,
-                DeleteLines = deleteLines
+                IsDeleted = changeRequest.IsDeleted
             };
         }
 
-        public Transaction ProjectChangeRequestLineToTransaction(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
+        public Transaction ProjectTransactionChangeRequestLineToEntity(TransactionDataChangeRequestLine changeRequestLine, Transaction transaction)
         {
             transaction.Sequence = changeRequestLine.Sequence;
             transaction.Reference = changeRequestLine.Reference;
@@ -64,20 +68,23 @@ namespace Services.Common
             ProposedDate = createLine.Date,
             ProposedSequence = createLine.Sequence,
             ProposedReference = createLine.Reference,
+            ProposedCategories = createLine.TransactionCategories?.Select(transactionCategoryMapper.MapEntityToDto).ToList() ?? new(),
+            ProposedProperties = createLine.TransactionProperties?.Select(transactionPropertyMapper.MapEntityToDto).ToList() ?? new(),
+
             CreatedOn = createLine.CreatedOn,
-            UpdatedOn = createLine.UpdatedOn
-            ,
-            ProposedCategories = createLine.TransactionCategories?.Select(transactionCategoryMapper.MapCategoryToDto).ToList() ?? new(),
-            ProposedProperties = createLine.TransactionProperties?.Select(transactionPropertyMapper.MapPropertyToDto).ToList() ?? new()
+            UpdatedOn = createLine.UpdatedOn,
+            IsDeleted = createLine.IsDeleted
         };
 
         private ChangeRequestDeleteLineDto MapToDeleteLineDto(ChangeRequestDeleteLine deleteLine) => new()
         {
             Id = deleteLine.Id,
-            TransactionToDelete = transactionMapper.MapTransactionToDto(deleteLine.Transaction),
+            TransactionToDelete = transactionMapper.MapEntityToDto(deleteLine.Transaction),
             RequestState = deleteLine.RequestState,
+
             CreatedOn = deleteLine.CreatedOn,
-            UpdatedOn = deleteLine.UpdatedOn
+            UpdatedOn = deleteLine.UpdatedOn,
+            IsDeleted = deleteLine.IsDeleted
         };
 
         private ChangeRequestCreateLine MapToCreateLineEntity(ChangeRequestCreateLineDto createLine) => new()
@@ -88,19 +95,24 @@ namespace Services.Common
             Date = createLine.ProposedDate,
             Sequence = createLine.ProposedSequence,
             Reference = createLine.ProposedReference,
+
+            TransactionCategories = createLine.ProposedCategories?.Select(transactionCategoryMapper.MapDtoToEntity).ToList() ?? [], //UNTRACKED
+            TransactionProperties = createLine.ProposedProperties?.Select(transactionPropertyMapper.MapDtoToEntity).ToList() ?? [],  //UNTRACKED
+
             CreatedOn = createLine.CreatedOn,
             UpdatedOn = createLine.UpdatedOn,
-            TransactionCategories = createLine.ProposedCategories?.Select(transactionCategoryMapper.MapDtoToCategory).ToList() ?? [],
-            TransactionProperties = createLine.ProposedProperties?.Select(transactionPropertyMapper.MapDtoToProperty).ToList() ?? []
+            IsDeleted = createLine.IsDeleted
         };
 
         private ChangeRequestDeleteLine MapToDeleteLineEntity(ChangeRequestDeleteLineDto deleteLine) => new()
         {
             Id = deleteLine.Id,
             RequestState = deleteLine.RequestState,
+            Transaction = transactionMapper.MapDtoToEntity(deleteLine.TransactionToDelete),
+
             CreatedOn = deleteLine.CreatedOn,
             UpdatedOn = deleteLine.UpdatedOn,
-            Transaction = transactionMapper.MapDtoToTransaction(deleteLine.TransactionToDelete)
+            IsDeleted = deleteLine.IsDeleted
         };
     }
 }

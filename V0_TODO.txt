@@ -1,6 +1,6 @@
 ===== V0 =====
-1) Extend process to multiple days instead of a single day (mainly sequence focused here) 
-1) document  upload for trannscation (evidence flow)
+1) Extend process to multiple days instead of a single day (mainly sequence focused here)  DONE
+2) document  upload for trannscation (evidence flow)
 3) balance per line 
 4) export functionality 
 
@@ -16,6 +16,8 @@ Versioning (should be possible now we are doing only creates and deletes, can ad
 1) input create DONE
 2) input same create (make sure entries are all ignored)
 3) input update file
+
+
 4) input delete file
 5) input mixed file
 6) input mixed file over multiple days
