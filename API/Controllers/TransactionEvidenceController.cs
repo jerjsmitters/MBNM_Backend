@@ -9,10 +9,21 @@ namespace API.Controllers
     [ApiController]
     public class TransactionEvidenceController(ITransactionEvidenceService transactionEvidenceService) : ControllerBase
     {
-        [HttpPost]
-        public async Task<ActionResult<TransactionEvidenceDto>> Post([FromBody] CreateEvidenceDto createEvidenceDto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFile(int id)
         {
-            if ((createEvidenceDto?.Bytes?.Length ?? 0) == 0)
+            var path = await transactionEvidenceService.GetFilePath(id);
+
+            return PhysicalFile(
+                path,
+                "application/pdf"
+            );
+        }
+
+        [HttpPost("upload")]
+        public async Task<ActionResult<TransactionEvidenceDto>> Post([FromForm] CreateEvidenceDto createEvidenceDto)
+        {
+            if ((createEvidenceDto?.File?.Length ?? 0) == 0)
             {
                 return BadRequest();
             }
@@ -20,7 +31,6 @@ namespace API.Controllers
             var created = await transactionEvidenceService.Create(createEvidenceDto);
             return Ok(created);
         }
-
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)

@@ -19,5 +19,6 @@ namespace Services.Interfaces.Transactions
 
         Task Delete(int id);
         Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate);
+        Task<bool> ToggleNeedsEvidence(int id);
     }
 }

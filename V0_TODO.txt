@@ -3,6 +3,7 @@
 2) document  upload for trannscation (evidence flow)
 3) balance per line 
 4) export functionality 
+5) IsDeleted needs to be handled for navigation properties (most likely on front end due to lack of AutoInclude filtering)
 
 
 ==== V1.1 ====== (TO BE 

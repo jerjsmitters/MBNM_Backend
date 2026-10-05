@@ -65,5 +65,12 @@ namespace API.Controllers
             await transactionService.Delete(transactionId);
             return Ok();
         }
+
+        [HttpPost("{id}/flag-for-needing-evidence")]
+        public async Task<ActionResult<bool>> FlagForNeedingEvidence([FromRoute] int id)
+        {
+            var result = await transactionService.ToggleNeedsEvidence(id);
+            return Ok(result);
+        }
     }
 }

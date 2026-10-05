@@ -40,7 +40,6 @@ namespace Services.Transactions
             return entities
                 .Select(mappingService.MapEntityToDto)
                 .ToList();
-
         }
 
         public async Task<TransactionsFilteredResultDto> GetAllFiltered(TransactionEntityFilter filter)
@@ -129,6 +128,17 @@ namespace Services.Transactions
         public Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate)
         {
             return AdjustSequenceOfTransactionsByDateInternal(startDate, endDate);
+        }
+
+        public async Task<bool> ToggleNeedsEvidence(int id)
+        {
+            var transaction = await dbContext.Transactions.FirstOrDefaultAsync(x => x.Id == id) ?? throw new InvalidOperationException("Cannot find transaction");
+            transaction.EvidencePending = !transaction.EvidencePending;
+
+            await dbContext.SaveChangesAsync();
+
+            return transaction.EvidencePending;
+
         }
 
         private Transaction AttachManyToManyEntities(Transaction transaction)
