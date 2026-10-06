@@ -1,6 +1,6 @@
 ===== V0 =====
 1) Extend process to multiple days instead of a single day (mainly sequence focused here)  DONE
-2) document  upload for trannscation (evidence flow)
+2) document  upload for trannscation (evidence flow) DONE
 3) balance per line 
 4) export functionality 
 5) IsDeleted needs to be handled for navigation properties (most likely on front end due to lack of AutoInclude filtering)

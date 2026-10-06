@@ -26,12 +26,7 @@ namespace API.Controllers
             return Ok(property);
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<List<TransactionDto>>> GetAll()
-        //{
-        //    var results = await transactionService.GetAll();
-        //    return Ok(results);
-        //}
+
 
         [HttpGet]
         public async Task<ActionResult<List<TransactionDto>>> GetAllFiltered(

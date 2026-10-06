@@ -15,6 +15,7 @@ using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces.Common;
 using Services.Interfaces.Input;
+using Services.Interfaces.Transactions;
 using System.Collections.Immutable;
 
 
@@ -24,7 +25,8 @@ namespace Services.Input
         EfDbContext dbContext, 
         IGenerateChangeRequestService generateChangeRequestService,
         IChangeRequestMapper changeRequestMapper,
-        ITransactionMapper transactionMapper) : IChangeRequestService
+        ITransactionMapper transactionMapper,
+        ITransactionService transactionService) : IChangeRequestService
     {
 
         public async Task<ChangeRequestDto?> GetForApproval(int id)
@@ -83,6 +85,8 @@ namespace Services.Input
         //approval process
         public async Task<List<ChangeRequestCommitResultDto>> ApplyChangeRequest(CommitChangeRequestDto applyChangeRequestInfo)
         {
+            await using var efDbTransaction = await dbContext.Database.BeginTransactionAsync();
+
             var results = new List<ChangeRequestCommitResultDto>();
             ChangeRequestCommitResultDto result;
 
@@ -97,7 +101,6 @@ namespace Services.Input
             }
 
             //add requests
-            var addRequests = new List<Transaction>();
             foreach (ChangeRequestCreateLine addRequest in changeRequest.CreateLines ?? [])
             {
                 if (NeedToIgnoreLine(applyChangeRequestInfo.CreateLines, addRequest))
@@ -107,20 +110,21 @@ namespace Services.Input
                 }
 
                 var transactionToAdd = ProjectChangeRequestLineToTransaction(addRequest);
-                addRequests.Add(transactionToAdd);
+                var addResult = dbContext.Transactions.Add(transactionToAdd);
+
                 addRequest.RequestState = ChangeRequestState.COMMITED;
+
+                await dbContext.SaveChangesAsync(); //ideally this should be called once at the end of loop, but I need its ID + this is a small private application that doesnt require such an elegant solution
 
                 result = new ChangeRequestCommitResultDto
                 {
                     OperationPerformed = ChangeRequestCommitOperation.ADD,
                     TransactionBefore = null,
-                    TransactionAfter = transactionMapper.MapEntityToDto(transactionToAdd)
+                    TransactionAfter = transactionMapper.MapEntityToDto(addResult.Entity)
                 };
 
                 results.Add(result);
             }
-
-            await dbContext.Transactions.AddRangeAsync(addRequests);
 
             //delete requests 
             foreach (var deleteRequest in changeRequest.DeleteLines ?? [])
@@ -145,6 +149,18 @@ namespace Services.Input
             }
 
             await dbContext.SaveChangesAsync();
+
+            //only recalc if everything wasn't ignored
+            if (results.Any())
+            {
+                var allTransactionBeforeIds = results.Select(x => x.TransactionBefore?.Id).Where(id => id != null);
+                var allTransactionAfterIds = results.Select(x => x.TransactionAfter?.Id).Where(id => id != null);
+                var allModifiedTransactionIds = allTransactionBeforeIds.Union(allTransactionAfterIds).ToList().ConvertAll(x => (int)x).Distinct();
+
+                await transactionService.RecalculateBalances(allModifiedTransactionIds.ToList());
+            }
+
+            await efDbTransaction.CommitAsync();
 
             return results;
         }

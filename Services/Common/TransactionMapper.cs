@@ -16,6 +16,7 @@ namespace Services.Common
                 Id = transaction.Id,
                 Reference = transaction.Reference,
                 Amount = transaction.Amount,
+                Balance = transaction.Balance,
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
                 EvidencePending = transaction.EvidencePending,
@@ -37,6 +38,7 @@ namespace Services.Common
                 Id = transaction.Id,
                 Reference = transaction.Reference,
                 Amount = transaction.Amount,
+                Balance = transaction.Balance,
                 Date = transaction.Date,
                 Sequence = transaction.Sequence,
                 EvidencePending = transaction.EvidencePending,
@@ -54,6 +56,7 @@ namespace Services.Common
         public Transaction ProjectDtoToEntity(TransactionDto incoming, Transaction entity)
         {
             entity.Amount = incoming.Amount;
+            entity.Balance = incoming.Balance;
             entity.Date = incoming.Date;
             entity.Reference = incoming.Reference;
             entity.Sequence = incoming.Sequence;

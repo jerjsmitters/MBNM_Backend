@@ -105,22 +105,34 @@ namespace Services.Transactions
             await AdjustSequenceOfTransactionsByDateInternal(startDate, endDate);
             await dbContext.SaveChangesAsync();
 
+            await RecalculateBalancesInternal([id]);
+
             await efDbTransaction.CommitAsync();
         }
 
         public async Task<TransactionDto> Update(TransactionDto update)
         {
+            await using var efDbTransaction = await dbContext.Database.BeginTransactionAsync();
+
             var entity = await dbContext
                 .Transactions
                 .FirstOrDefaultAsync(x => x.Id == update.Id) 
                 ?? throw new InvalidOperationException("doesnt exist");
 
+            var balanceNeedsRecalc = update.Amount != entity.Amount;
+
             entity = mappingService.ProjectDtoToEntity(update, entity);
 
             //attach many to many
             entity = AttachManyToManyEntities(entity);
-
             await dbContext.SaveChangesAsync();
+
+            if (balanceNeedsRecalc)
+            {
+                await RecalculateBalancesInternal([entity.Id.Value]);
+            }
+
+            await efDbTransaction.CommitAsync();
 
             return mappingService.MapEntityToDto(entity);
         }
@@ -139,6 +151,13 @@ namespace Services.Transactions
 
             return transaction.EvidencePending;
 
+        }
+
+        public async Task RecalculateBalances(List<int> modifiedTransactionIds)
+        {
+            await RecalculateBalancesInternal(modifiedTransactionIds);
+
+            await dbContext.SaveChangesAsync();
         }
 
         private Transaction AttachManyToManyEntities(Transaction transaction)
@@ -181,11 +200,42 @@ namespace Services.Transactions
             }
         }
 
+        private async Task RecalculateBalancesInternal(List<int> modifiedTransactionIds)
+        {
+            var earliestModifiedTransactionId = modifiedTransactionIds.Min();
+
+            var startingBalance = dbContext
+                .Transactions
+                .Where(x => x.Id < earliestModifiedTransactionId && !x.IsDeleted)
+                .OrderByDescending(x => x.Id)
+                .Take(1)
+                .FirstOrDefault()
+                ?.Balance ?? 0;
+
+            var transactionsToRecalc = dbContext
+                .Transactions
+                .Where(x => x.Id >= earliestModifiedTransactionId)
+                .OrderBy(x => x.Id);
+
+            decimal? rollingBalance = null;
+
+            foreach (var transaction in transactionsToRecalc)
+            {
+                if (!rollingBalance.HasValue)
+                {
+                    rollingBalance = startingBalance;
+                }
+
+                transaction.Balance = rollingBalance.Value + transaction.Amount;
+                rollingBalance = transaction.Balance;
+            }
+        }
+
         private IQueryable<Transaction> GetNonDeletedSequenced() => 
             dbContext
                 .Transactions
                 .Where(t => !t.IsDeleted)
-                .OrderBy(t => t.Date)
-                .ThenBy(t => t.Sequence);
+                .OrderByDescending(t => t.Date)
+                .ThenByDescending(t => t.Sequence);
     }
 }

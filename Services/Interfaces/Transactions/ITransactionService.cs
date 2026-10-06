@@ -15,10 +15,15 @@ namespace Services.Interfaces.Transactions
         Task<List<TransactionDto>> GetAll();
 
         Task<TransactionsFilteredResultDto> GetAllFiltered(TransactionEntityFilter entityFilter);
+
         Task<TransactionDto> Update(TransactionDto update);
 
         Task Delete(int id);
+
         Task AdjustSequenceOfTransactionsByDate(DateOnly startDate, DateOnly endDate);
+
         Task<bool> ToggleNeedsEvidence(int id);
+
+        Task RecalculateBalances(List<int> modifiedTransactionIds);
     }
 }

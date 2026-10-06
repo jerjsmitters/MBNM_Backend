@@ -11,6 +11,7 @@ namespace Common.Dto.Transactions
         public DateOnly Date { get; set; }
         public int Sequence { get; set; }
         public decimal Amount { get; init; }
+        public decimal Balance { get; init; }
         public string Reference { get; init; }
         public bool EvidencePending { get; init; }
 

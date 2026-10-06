@@ -9,6 +9,7 @@ namespace DataAccess.Models.Transactions
     public class Transaction : EntityBase
     {
         public decimal Amount { get; set; }
+        public decimal Balance { get; set; }
         public DateOnly Date { get; set; }
         public int Sequence { get; set; }
         public string Reference { get; set; }

@@ -41,10 +41,10 @@ namespace Services.Transactions
                     Transaction = relevantTransaction
                 };
 
-                await dbContext.AddAsync(createEvidenceModel);
+                var result = await dbContext.AddAsync(createEvidenceModel);
                 await dbContext.SaveChangesAsync();
                 
-                return mapper.MapEntityToDto(createEvidenceModel);
+                return mapper.MapEntityToDto(result.Entity);
 
             }
             catch
