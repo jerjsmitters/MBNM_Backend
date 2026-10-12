@@ -5,9 +5,5 @@ using System.Text;
 
 namespace Common.Dto.Api
 {
-    public record ApplyChangeRequestLineDto
-    {
-        public int LineId { get; set; }
-        public ChangeRequestState DesiredState { get; set; }
-    }
+    public record ApplyChangeRequestLineDto(int LineId, ChangeRequestState DesiredState);
 }

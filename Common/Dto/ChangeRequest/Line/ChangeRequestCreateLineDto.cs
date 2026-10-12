@@ -1,5 +1,6 @@
 ﻿using Common.Dto.Base;
 using Common.Dto.Criteria;
+using Common.Enums;
 
 namespace Common.Dto.ChangeRequest.Line
 {

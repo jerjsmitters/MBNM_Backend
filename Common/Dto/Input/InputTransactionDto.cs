@@ -7,6 +7,6 @@ namespace Common.Dto.Input
 {
     public record InputTransactionDto(DateOnly Date, int InputSequence, decimal Amount, string Reference)
     {
-        public TransactionIdentifierDto GetIdentifier() => new(Date, InputSequence, Amount, Reference);
+        public TransactionIdentifierDto GetIdentifier() => new TransactionIdentifierDto(Date, InputSequence, Amount, Reference);
     }
 }

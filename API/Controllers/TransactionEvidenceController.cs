@@ -10,7 +10,7 @@ namespace API.Controllers
     public class TransactionEvidenceController(ITransactionEvidenceService transactionEvidenceService) : ControllerBase
     {
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetFile(int id)
+        public async Task<ActionResult<PhysicalFileResult>> GetFile(int id)
         {
             var path = await transactionEvidenceService.GetFilePath(id);
 

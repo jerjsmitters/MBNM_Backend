@@ -11,9 +11,4 @@
     <ProjectReference Include="..\DataAccess.EF\DataAccess.EF.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interfaces\Output\" />
-    <Folder Include="Output\" />
-  </ItemGroup>
-
 </Project>

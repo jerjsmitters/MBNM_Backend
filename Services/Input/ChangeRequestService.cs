@@ -117,11 +117,11 @@ namespace Services.Input
                 await dbContext.SaveChangesAsync(); //ideally this should be called once at the end of loop, but I need its ID + this is a small private application that doesnt require such an elegant solution
 
                 result = new ChangeRequestCommitResultDto
-                {
-                    OperationPerformed = ChangeRequestCommitOperation.ADD,
-                    TransactionBefore = null,
-                    TransactionAfter = transactionMapper.MapEntityToDto(addResult.Entity)
-                };
+                (
+                    null,
+                    transactionMapper.MapEntityToDto(addResult.Entity),
+                    ChangeRequestCommitOperation.ADD
+                );
 
                 results.Add(result);
             }
@@ -138,12 +138,11 @@ namespace Services.Input
                 deleteRequest.Transaction.IsDeleted = true;
                 deleteRequest.RequestState = ChangeRequestState.COMMITED;
 
-                result = new ChangeRequestCommitResultDto
-                {
-                    OperationPerformed = ChangeRequestCommitOperation.DELETE,
-                    TransactionBefore = transactionMapper.MapEntityToDto(deleteRequest.Transaction),
-                    TransactionAfter = null
-                };
+                result = new ChangeRequestCommitResultDto (
+                    transactionMapper.MapEntityToDto(deleteRequest.Transaction),
+                    null,
+                    ChangeRequestCommitOperation.DELETE
+                );
 
                 results.Add(result);
             }

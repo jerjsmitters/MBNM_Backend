@@ -6,10 +6,5 @@ using System.Text;
 
 namespace Common.Dto.ChangeRequest
 {
-    public record ChangeRequestCommitResultDto
-    {
-        public TransactionDto? TransactionBefore { get; init; }
-        public TransactionDto? TransactionAfter { get; init; }
-        public ChangeRequestCommitOperation OperationPerformed { get; init; }
-    }
+    public record ChangeRequestCommitResultDto(TransactionDto? TransactionBefore, TransactionDto? TransactionAfter, ChangeRequestCommitOperation OperationPerformed);
 }

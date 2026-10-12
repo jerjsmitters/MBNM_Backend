@@ -8,7 +8,8 @@ namespace Common.Dto.Transactions
 {
     public record TransactionEvidenceDto : EntityBaseDto
     {
-        public string FileLocation { get; set; } //use local for now, can move to S3 eventually
-        public TransactionDto Transaction { get; set; }
-    }
+        public string FileLocation { get; init; }
+        public TransactionDto Transaction { get; init; }
+
+    } //use local for now, can move to S3 eventually
 }

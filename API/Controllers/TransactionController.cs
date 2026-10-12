@@ -1,5 +1,6 @@
 ﻿using Common.Dto.Api;
 using Common.Dto.Criteria;
+using Common.Dto.Filters;
 using Common.Dto.Transactions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,19 @@ namespace API.Controllers
             [FromQuery] [Optional] DateOnly? endDate
             )
         {
-            var transactionFilter = new TransactionEntityFilter(pageNumber, pageLength, categoryIds, propertyIds, searchText, startDate, endDate);
+            var transactionFilter = new TransactionEntityFilter
+            {
+                PageNumber = pageNumber,
+                PageLength = pageLength,
+                SearchText = searchText,
+
+                CategoryIds = categoryIds ?? [],
+                PropertyIds = propertyIds ?? [],
+
+                EndDate = endDate,
+                StartDate = startDate,
+            };
+
             var results = await transactionService.GetAllFiltered(transactionFilter);
             Response.Headers["Total-Results"] = results.TotalResults.ToString();
 

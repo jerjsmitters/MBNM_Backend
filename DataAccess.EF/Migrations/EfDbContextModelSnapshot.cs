@@ -236,6 +236,30 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("TransactionProperties");
                 });
 
+            modelBuilder.Entity("DataAccess.Models.Output.ExportFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExportFiles");
+                });
+
             modelBuilder.Entity("DataAccess.Models.Transactions.Transaction", b =>
                 {
                     b.Property<int>("Id")

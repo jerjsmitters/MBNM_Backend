@@ -1,0 +1,42 @@
+﻿using Common.Dto.Api;
+using Common.Dto.Filters;
+using Common.Dto.Output;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Services.Interfaces.Output;
+using System.Runtime.InteropServices;
+
+namespace API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ExportController(IExportService exportService) : ControllerBase
+    {
+        [HttpPost("/export")]
+        public async Task<ActionResult<PhysicalFileResult>> Export([FromBody] TransactionEntityFilter filters)
+        {
+            var file = await exportService.CreateExportFileForTransactions(filters);
+            return Ok(PhysicalFile(file.FilePath, "text/csv"));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PhysicalFileResult>> GetExportFile(int id)
+        {
+            var exportFile = await exportService.GetExportFile(id);
+
+            if (exportFile == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(PhysicalFile(exportFile.FilePath, "text/csv"));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<ExportFileDto>>> GetExportFiles()
+        {
+            var files = await exportService.GetAllExportFiles();
+            return Ok(files);
+        }
+    }
+}

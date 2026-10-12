@@ -3,6 +3,7 @@ using DataAccess.Models.Base;
 using DataAccess.Models.ChangeRequestEntities;
 using DataAccess.Models.ChangeRequestEntities.Line;
 using DataAccess.Models.Criteria;
+using DataAccess.Models.Output;
 using DataAccess.Models.Transactions;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,11 +18,12 @@ namespace DataAccess.EF.DbContextImpl
         public DbSet<ChangeRequest> ChangeRequests { get; set; }
         public DbSet<ChangeRequestCreateLine> ChangeRequestCreateLines { get; set; }
         public DbSet<ChangeRequestDeleteLine> ChangeRequestDeleteLines { get; set; }
+        public DbSet<ExportFile> ExportFiles { get; set; }
+        public DbSet<MatchingCriteria> MatchingCriteria { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionCategory> TransactionCategories { get; set; }
-        public DbSet<TransactionProperty> TransactionProperties { get; set; }
         public DbSet<TransactionEvidence> TransactionEvidence { get; set; }
-        public DbSet<MatchingCriteria> MatchingCriteria { get; set; }
+        public DbSet<TransactionProperty> TransactionProperties { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

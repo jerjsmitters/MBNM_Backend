@@ -1,7 +1,4 @@
-﻿namespace API.Dto
+﻿namespace Common.Dto.Api
 {
-    public record InputCsvDto
-    {
-        public string CsvLines { get; init; }
-    }
+    public record InputCsvDto(string CsvLines);
 }

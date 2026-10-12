@@ -5,7 +5,5 @@ using System.Text;
 
 namespace Common.Dto.Criteria
 {
-    public record TransactionPropertyDto : EntityWithCriteriaDto
-    {
-    }
+    public record TransactionPropertyDto : EntityWithCriteriaDto;
 }

@@ -1,6 +1,6 @@
 ﻿using Common.Dto;
-using Common.Dto.Api;
 using Common.Dto.ChangeRequest;
+using Common.Dto.Filters;
 using Common.Dto.Input;
 using Common.Dto.Transactions;
 using DataAccess.EF.DbContextImpl;

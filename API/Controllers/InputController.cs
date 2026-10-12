@@ -1,4 +1,4 @@
-﻿using API.Dto;
+﻿using Common.Dto.Api;
 using Common.Dto.ChangeRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

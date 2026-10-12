@@ -8,6 +8,5 @@ namespace Common.Dto.Base
     public abstract record ChangeRequestLineDto : EntityBaseDto
     {
         public ChangeRequestState RequestState { get; init; }
-
     }
 }
