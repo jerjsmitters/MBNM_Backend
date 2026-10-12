@@ -14,7 +14,7 @@ namespace Services.Output
         {
             var fileName = GenerateFileName(filtersUsedToGetTransactions);
             var fileText = GenerateExportFileContents(transactions);
-            var exportFile = await CreateExportFile(fileText, fileText);
+            var exportFile = await CreateExportFile(fileName, fileText);
 
             return exportFile;
         }
@@ -50,8 +50,8 @@ namespace Services.Output
         private string GenerateFileName(TransactionEntityFilter filtersUsedToGetTransactions) =>
             string.Format(
                 Constants.OutputFileNameTemplate,
-                filtersUsedToGetTransactions.StartDate,
-                filtersUsedToGetTransactions.EndDate,
+                filtersUsedToGetTransactions.StartDate?.ToString(Constants.OutputDateFormat) ?? "Whenever",
+                filtersUsedToGetTransactions.EndDate?.ToString(Constants.OutputDateFormat) ?? "Whenever",
                 Guid.NewGuid().ToString()
             );
 
@@ -67,6 +67,7 @@ namespace Services.Output
                 Constants.OutputLineFormat,
                 transaction.Date.ToString(Constants.OutputDateFormat),
                 transaction.Sequence.ToString(),
+                "£" + transaction.Amount.ToString(),
                 "£" + transaction.Balance.ToString(),
                 properties,
                 categories

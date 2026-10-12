@@ -12,15 +12,15 @@ namespace API.Controllers
     [ApiController]
     public class ExportController(IExportService exportService) : ControllerBase
     {
-        [HttpPost("/export")]
-        public async Task<ActionResult<PhysicalFileResult>> Export([FromBody] TransactionEntityFilter filters)
+        [HttpPost("generate")]
+        public async Task<IActionResult> Export([FromBody] TransactionEntityFilter filters)
         {
             var file = await exportService.CreateExportFileForTransactions(filters);
-            return Ok(PhysicalFile(file.FilePath, "text/csv"));
+            return PhysicalFile(file.FilePath, "text/csv");
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PhysicalFileResult>> GetExportFile(int id)
+        public async Task<IActionResult> GetExportFile(int id)
         {
             var exportFile = await exportService.GetExportFile(id);
 
@@ -29,7 +29,7 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            return Ok(PhysicalFile(exportFile.FilePath, "text/csv"));
+            return PhysicalFile(exportFile.FilePath, "text/csv");
         }
 
         [HttpGet]

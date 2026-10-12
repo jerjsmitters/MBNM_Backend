@@ -7,7 +7,7 @@ namespace Services.Common
     internal static class Constants
     {
         public const string FileRootLocation = "C:\\FileStore\\MBNM\\Uploads";
-        public const string OutputDateFormat = "DD-MM-yyyy";
+        public const string OutputDateFormat = "dd-MM-yyyy";
 
         /// <summary>
         /// startdate, enddate, guid

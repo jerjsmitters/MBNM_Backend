@@ -6,7 +6,9 @@ using Services.Criteria;
 using Services.Input;
 using Services.Interfaces.Common;
 using Services.Interfaces.Input;
+using Services.Interfaces.Output;
 using Services.Interfaces.Transactions;
+using Services.Output;
 using Services.Transactions;
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,8 @@ namespace Services.Setup
             services.AddScoped<ITransactionEvidenceService, TransactionEvidenceService>();
             services.AddScoped<ITransactionPropertyService, TransactionPropertyService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IExportService, ExportService>();
+            services.AddScoped<IGenerateExportFileService, GenerateExportFileService>();
 
             //misc
             services.AddScoped<IMatchingCriteriaService, MatchingCriteriaService>();
@@ -40,6 +44,7 @@ namespace Services.Setup
             services.AddScoped<ITransactionPropertyMapper, TransactionPropertyMapper>();
             services.AddScoped<ITransactionMapper, TransactionMapper>();
             services.AddScoped<ITransactionEvidenceMapper, TransactionEvidenceMapper>();
+            services.AddScoped<IExportFileMapper, ExportFileMapper>();
 
             services.InitialiseEF(connString);
 
