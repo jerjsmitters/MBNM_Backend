@@ -130,7 +130,7 @@ namespace Services.Input
             return new(date, toBeAdded, toBeRemoved);
         }
 
-        private ImmutableArray<DateOnly> GetDateRange(DateOnly startDate, DateOnly endDate)
+        private static ImmutableArray<DateOnly> GetDateRange(DateOnly startDate, DateOnly endDate)
         {
             DateOnly date = startDate;
             List <DateOnly> dateRange = [];
@@ -146,7 +146,7 @@ namespace Services.Input
 
 
 
-        private Dictionary<DateOnly, List<InputTransactionDto>> GetInputTransactionByDateMap(List<InputTransactionDto> inputTransactions)
+        private static Dictionary<DateOnly, List<InputTransactionDto>> GetInputTransactionByDateMap(List<InputTransactionDto> inputTransactions)
         {
             var returnValue = new Dictionary<DateOnly, List<InputTransactionDto>>();
 
@@ -165,7 +165,7 @@ namespace Services.Input
             return returnValue;
         }
 
-        private Dictionary<DateOnly, List<TransactionDto>> GetPersistedTransactionByDateMap(List<TransactionDto> persistedTransactions)
+        private static Dictionary<DateOnly, List<TransactionDto>> GetPersistedTransactionByDateMap(List<TransactionDto> persistedTransactions)
         {
             var returnValue = new Dictionary<DateOnly, List<TransactionDto>>();
 
@@ -185,7 +185,7 @@ namespace Services.Input
         }
 
 
-        private List<ChangeRequestDeleteLineDto> RemoveSurplusPersistedIfApplicable(int finalSequence, List<TransactionDto> persistedTransactions, List<ChangeRequestDeleteLineDto> generatedDeleteLines)
+        private static List<ChangeRequestDeleteLineDto> RemoveSurplusPersistedIfApplicable(int finalSequence, List<TransactionDto> persistedTransactions, List<ChangeRequestDeleteLineDto> generatedDeleteLines)
         {
             var oneBasedFinalSequence = finalSequence + 1;
             if (oneBasedFinalSequence >= persistedTransactions.Count)

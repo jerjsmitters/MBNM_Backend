@@ -12,16 +12,11 @@ namespace API.Controllers
     {
         [HttpPost]
         [Route("input-csv")]
-        public async Task<ActionResult<ChangeRequestDto>> InputCsv([FromBody] InputCsvDto inputCsv)
+        public async Task<ActionResult<ChangeRequestDto>> InputCsv([FromForm]IFormFile file)
         {
-            if (inputCsv == null || string.IsNullOrWhiteSpace(inputCsv.CsvLines)) 
-            {
-                return BadRequest();
-            }
-
             try
             {
-                var results = await inputService.AddTransactions(inputCsv.CsvLines);
+                var results = await inputService.AddTransactions(file);
 
                 return Ok(results);
             }

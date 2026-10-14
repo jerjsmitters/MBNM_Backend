@@ -25,5 +25,6 @@ namespace Services.Interfaces.Transactions
         Task<bool> ToggleNeedsEvidence(int id);
 
         Task RecalculateBalances(List<int> modifiedTransactionIds);
+        Task ReapplyMatchingCriteriaEntities(TransactionEntityFilter forFilters);
     }
 }

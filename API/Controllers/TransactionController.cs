@@ -74,11 +74,19 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPost("{id}/flag-for-needing-evidence")]
+        [HttpPatch("{id}/flag-for-needing-evidence")]
         public async Task<ActionResult<bool>> FlagForNeedingEvidence([FromRoute] int id)
         {
             var result = await transactionService.ToggleNeedsEvidence(id);
             return Ok(result);
+        }
+
+        [HttpPatch("reapply-matching-criteria-entities")]
+        public async Task<ActionResult> ReapplyMatchingCriteriaEntities([FromBody] TransactionEntityFilter filtersForTransactionsToReapply)
+        {
+            await transactionService.ReapplyMatchingCriteriaEntities(filtersForTransactionsToReapply);
+
+            return Ok();
         }
     }
 }

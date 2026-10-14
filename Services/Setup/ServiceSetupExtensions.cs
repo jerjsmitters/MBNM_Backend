@@ -33,6 +33,7 @@ namespace Services.Setup
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IExportService, ExportService>();
             services.AddScoped<IGenerateExportFileService, GenerateExportFileService>();
+            services.AddScoped<IExcelToCsvService, ExcelToCsvService>();
 
             //misc
             services.AddScoped<IMatchingCriteriaService, MatchingCriteriaService>();
